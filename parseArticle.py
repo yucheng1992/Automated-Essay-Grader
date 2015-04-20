@@ -67,17 +67,36 @@ def countAverageWordLength(wordList):
     return float(totalLength) / countWord(wordList)
 
 
-if __name__ == "__main__":
+def countClauseWord(article, clauseWordsList):
+    """Calculate the number of clause words in an article"""
+    num = 0
+    wordList = article.split(" ")
+    for word in wordList:
+        if word in clauseWordsList:
+            num += 1
+    return num
+
+
+def main():
+    """Main function of this module"""
     dataFileName = "training_set_rel3.tsv"
     article = parseTsvFile(dataFileName)
+
     stopWordsFileName = "stopWords.txt"
     stopWords = readStopWords(stopWordsFileName)
-    print stopWords
+    
+    clauseWordsList = ["which", "where", "what", "why", "who"]
+
     wordNumber = []
     sentenceNumber = []
     averageWordLength = []
+    clauseWordNumber = []
 
     for essay in article["essay"]:
         wordNumber.append(countWord(deleteStopWords(essay, stopWords)))
         sentenceNumber.append(countSentence(essay))
         averageWordLength.append(countAverageWordLength(deleteStopWords(essay, stopWords)))
+        clauseWordNumber.append(countClauseWord(essay, clauseWordsList))
+
+if __name__ == "__main__":
+   main() 
