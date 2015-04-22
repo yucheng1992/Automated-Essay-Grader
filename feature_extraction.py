@@ -34,7 +34,15 @@ class EssayInstance:
         symbols = string.punctuation
         words = map(lambda Element: Element.translate(None, symbols).strip(), essay.strip().split(' '))
         words = filter(None, words)
-        self.word_list = words
+        new_word_list = []
+        for word in words:
+            try:
+                word = decode(word)
+                word = str(word)
+                new_word_list.append(word)
+            except:
+                pass
+        self.word_list = new_word_list
         
         c = Counter()
         for item in words:
@@ -46,7 +54,7 @@ class EssayInstance:
 
         self.word_dict = c
         if len(self.word_list) > 0:
-            print self.word_list
+            #print self.word_list
             pos_tag_list = pos_tag(self.word_list)
             pos_tags = [item[1] for item in pos_tag_list]
             symbols = string.punctuation
@@ -90,22 +98,22 @@ class corpus_df:
         for word in self.idf:
             self.idf[word] = log(float(self.N)/self.idf[word])
 
-	
+def decode(words):
+    return str(words.decode("utf8","ignore"))
 def main():
     train = pd.read_csv('training_set_rel3.tsv',sep='\t')
     bagofwords_list = []
     essay_list = []
     pos_list = []
+    i = 0
     for essay in train['essay']:
-        try:
-            e = EssayInstance()
-            e.construct_word_dict(essay)
-            essay_list.append(e)
-            bagofwords_list.append(e.word_dict)
-            pos_list.append(e.pos_tags)
-            #print bagofwords_list
-        except:
-            pass
+        print i
+        e = EssayInstance()
+        e.construct_word_dict(essay)
+        essay_list.append(e)
+        bagofwords_list.append(e.word_dict)
+        pos_list.append(e.pos_tags)
+        i = i+1
     corpus = corpus_df()
     corpus.fit(essay_list)	
     for i in essay_list:
@@ -118,5 +126,4 @@ def main():
         writer = csv.writer(f)
         writer.writerow(pos_list)
         
-    #print essay_list[1].word_tfidf
 main()
