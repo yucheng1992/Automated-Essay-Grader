@@ -98,4 +98,6 @@ class parseArticle():
 
 if __name__ == "__main__":
     articleFeatures = parseArticle()
+    print "==================Generating features=================="
     wordNumber, sentenceNumber, averageWordLength, clauseWordNumber = articleFeatures.generateFeatures()
+    print "==================Done!=================="
