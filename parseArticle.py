@@ -5,6 +5,7 @@ import sys
 
 class parseArticle():
     '''This is a class built for generating features from all the articles.''' 
+    
     def __init__(self):
         """initiate the class"""
         self.dataFileName = "training_set_rel3.tsv"
@@ -17,6 +18,7 @@ class parseArticle():
         self.averageWordLength = []
         self.clauseWordNumber = []
 
+    
     def parseTsvFile(self):
         '''Read the essays from the tsv file ans return a dataframe containing all the essays.'''
     
@@ -85,6 +87,7 @@ class parseArticle():
             if word in self.clauseWordsList:
                 num += 1
         return num
+
 
     def generateFeatures(self):
         """generate necessary features for all the articles"""
