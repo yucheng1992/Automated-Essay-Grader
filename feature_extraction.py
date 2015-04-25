@@ -98,14 +98,21 @@ class corpus_df:
         for word in self.idf:
             self.idf[word] = log(float(self.N)/self.idf[word])
 
+
 def decode(words):
+    """
+    use utf8 to decode the word. 
+    """
     return str(words.decode("utf8","ignore"))
+
+
 def main():
     train = pd.read_csv('training_set_rel3.tsv',sep='\t')
     bagofwords_list = []
     essay_list = []
     pos_list = []
     i = 0
+
     for essay in train['essay']:
         print i
         e = EssayInstance()
@@ -116,14 +123,25 @@ def main():
         i = i+1
     corpus = corpus_df()
     corpus.fit(essay_list)	
+
     for i in essay_list:
         i.transform_to_tfidf(corpus.idf)
     
-    with open('features_words.csv','wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(bagofwords_list)
-    with open('features_pos.csv','wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(pos_list)
+    try:
+        featurePos = open("featuresPos.pkl", "wb")
+        pickle.dump(pos_list, featurePos)
+        featurePos.close()
+    except Exception:
+        print "Cannot write pos_list into file due to the exception:", sys.exc_info()[0]
+        raise
+    
+    try:
+        featureWords = open("featureWords.pkl", "wb")
+        pickle.dump(bagofwords_list, featureWords)
+        featureWords.close()
+    except Exception:
+        print  "Cannot write word_list into file due to the exception:", sys.exc_info()[0]
+        raise
+
         
 main()
