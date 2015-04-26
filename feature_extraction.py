@@ -12,7 +12,8 @@ import util as util
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize
 import csv
-
+import nltk
+nltk.download('maxent_treebank_pos_tagger')
 class EssayInstance:
     """
     Build the review class
@@ -98,50 +99,51 @@ class corpus_df:
         for word in self.idf:
             self.idf[word] = log(float(self.N)/self.idf[word])
 
-
 def decode(words):
-    """
-    use utf8 to decode the word. 
-    """
+
     return str(words.decode("utf8","ignore"))
 
 
 def main():
     train = pd.read_csv('training_set_rel3.tsv',sep='\t')
-    bagofwords_list = []
-    essay_list = []
-    pos_list = []
-    i = 0
-
-    for essay in train['essay']:
-        print i
-        e = EssayInstance()
-        e.construct_word_dict(essay)
-        essay_list.append(e)
-        bagofwords_list.append(e.word_dict)
-        pos_list.append(e.pos_tags)
-        i = i+1
-    corpus = corpus_df()
-    corpus.fit(essay_list)	
-
-    for i in essay_list:
-        i.transform_to_tfidf(corpus.idf)
     
-    try:
-        featurePos = open("featuresPos.pkl", "wb")
-        pickle.dump(pos_list, featurePos)
-        featurePos.close()
-    except Exception:
-        print "Cannot write pos_list into file due to the exception:", sys.exc_info()[0]
-        raise
     
-    try:
-        featureWords = open("featureWords.pkl", "wb")
-        pickle.dump(bagofwords_list, featureWords)
-        featureWords.close()
-    except Exception:
-        print  "Cannot write word_list into file due to the exception:", sys.exc_info()[0]
-        raise
-
+    for k in range(1, 9):
+        bagofwords_list = []
+        essay_list = []
+        pos_list = []
+        i = 0
+        mask = train["essay_set"] == k
+        partTrain = train[mask]
+        for essay in partTrain['essay']:
+            print i
+            e = EssayInstance()
+            e.construct_word_dict(essay)
+            essay_list.append(e)
+            bagofwords_list.append(e.word_dict)
+            pos_list.append(e.pos_tags)
+            i = i+1
+        corpus = corpus_df()
+        corpus.fit(essay_list)	
+        for i in essay_list:
+            i.transform_to_tfidf(corpus.idf)
         
-main()
+        try:
+            featurePos = open("featuresPosEssaySet{}.pkl".format(k), "wb")
+            pickle.dump(pos_list, featurePos)
+            featurePos.close()
+        except Exception:
+            print "Cannot write pos_list into file due to the exception:", sys.exc_info()[0]
+            raise
+
+        try:
+            featureWords = open("featureWordsEssaySet{}.pkl".format(k), "wb")
+            pickle.dump(bagofwords_list, featureWords)
+            featureWords.close()
+        except Exception:
+            print  "Cannot write word_list into file due to the exception:", sys.exc_info()[0]
+            raise
+       
+
+if __name__ == '__main__':
+    main()
