@@ -5,20 +5,16 @@ import sys
 
 class parseArticle():
     '''This is a class built for generating features from all the articles.''' 
-    
     def __init__(self):
         """initiate the class"""
         self.dataFileName = "training_set_rel3.tsv"
         self.stopWordsFileName = "stopWords.txt"
         self.clauseWordsList = ["which", "where", "what", "why", "who"]
         self.article = self.parseTsvFile()["essay"]
+        self.file = self.parseTsvFile()
         self.stopWords = self.readStopWords()
-        self.wordNumber = []
-        self.sentenceNumber = []
-        self.averageWordLength = []
-        self.clauseWordNumber = []
 
-    
+
     def parseTsvFile(self):
         '''Read the essays from the tsv file ans return a dataframe containing all the essays.'''
     
@@ -88,19 +84,35 @@ class parseArticle():
                 num += 1
         return num
 
-
     def generateFeatures(self):
         """generate necessary features for all the articles"""
-        for essay in self.article:
-            self.wordNumber.append(self.countWord(self.deleteStopWords(essay)))
-            self.sentenceNumber.append(self.countSentence(essay))
-            self.averageWordLength.append(self.countAverageWordLength(self.deleteStopWords(essay)))
-            self.clauseWordNumber.append(self.countClauseWord(essay))
-        return self.wordNumber, self.sentenceNumber, self.averageWordLength, self.clauseWordNumber
+        totalWordNumber = []
+        totalSentenceNumber = []
+        totalAverageWordLength = []
+        totalClauseWordNumber = []
+        for i in range(1, 9):
+            
+            mask = self.file["essay_set"] == i
+            essaySet = self.file[mask]["essay"]
+            
+            wordNumber = []
+            sentenceNumber = []
+            averageWordLength = []
+            clauseWordNumber = []
+            for essay in essaySet:
+                wordNumber.append(self.countWord(self.deleteStopWords(essay)))
+                sentenceNumber.append(self.countSentence(essay))
+                averageWordLength.append(self.countAverageWordLength(self.deleteStopWords(essay)))
+                clauseWordNumber.append(self.countClauseWord(essay))
+            totalWordNumber.append(wordNumber)
+            totalSentenceNumber.append(sentenceNumber)
+            totalAverageWordLength.append(averageWordLength)
+            totalClauseWordNumber.append(clauseWordNumber)
+
+        return totalWordNumber, totalSentenceNumber, totalAverageWordLength, totalClauseWordNumber
 
 
 if __name__ == "__main__":
     articleFeatures = parseArticle()
-    print "==================Generating features=================="
     wordNumber, sentenceNumber, averageWordLength, clauseWordNumber = articleFeatures.generateFeatures()
-    print "==================Done!=================="
+    # print wordNumber[1]

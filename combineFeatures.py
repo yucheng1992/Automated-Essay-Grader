@@ -15,7 +15,7 @@ class combineFeatures():
         self.posFileName = "featuresPosEssaySet"
         self.wordsFileName = "featureWordsEssaySet"
         self.missSpellFileName = "missSpellingCount.pkl"
-        self.dataFileName = "training_set_rel3.tsv"
+        self.dataFileName = "valid_set.tsv"
         self.wordNumber, self.sentenceNumber, self.averageWordLength, self.clauseWordNumber = self.readFeaturesFromParseArticle()
         # self.posData, self.missSpellData = self.readFile()
 
@@ -66,12 +66,13 @@ class combineFeatures():
         return articleFeatures.generateFeatures()
 
 
-    def combineAllFeatures(self, essaySetNumber):
+    def combineAllFeatures(self, essaySetNumber, missDataStartIndex):
         """combine all the articless features together"""
-         
+        
         scores = self.returnDomain1Score(essaySetNumber)
         posData, missData = self.readFile(essaySetNumber) 
         combineData = []
+        j = missDataStartIndex
         for i in range(len(posData)):
             # featureCounter = self.posData[i] + self.wordsData[i]
             featureCounter = posData[i]
@@ -79,19 +80,23 @@ class combineFeatures():
             featureCounter["sentenceNumber"] = self.sentenceNumber[essaySetNumber-1][i]
             featureCounter["averageWordLength"] = self.averageWordLength[essaySetNumber-1][i]
             featureCounter["clauseWordNumber"] = self.clauseWordNumber[essaySetNumber-1][i]
-            featureCounter["missSpelling"] = missData[i]
+            featureCounter["missSpelling"] = missData[j]
             featureCounter["score"] = scores[i]
             combineData.append(featureCounter)
-        return combineData
+            j = j + 1
+        return combineData, j
 
 
     def writeToCsv(self):
         """write the combined features to a csv file"""
+        missDataStartIdx = 0
         for i in range(1, 9):
             print "============Combining essay set%d's features============" %(i)
-            features = self.combineAllFeatures(i)
+            features, j = self.combineAllFeatures(i, missDataStartIdx)
             print "============Essay set%d's features have been combined!============" %(i)
             print 
+            
+            missDataStartIdx = j
 
             totalCounter = Counter()
 
@@ -104,7 +109,7 @@ class combineFeatures():
             df = pd.DataFrame(features)
             
             print "============Writing essay set%d's features to csv file============" %(i)
-            df.to_csv("essaySet{}.csv".format(i))
+            df.to_csv("validEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
        
