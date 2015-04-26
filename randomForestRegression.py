@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 from sklearn.ensemble import RandomForestRegressor
-
+from score import quadratic_weighted_kappa
 
 class randomForestRegression(object):
     """Use random forest regression model to train the data and make predictions on the validation data"""
@@ -56,10 +56,15 @@ class randomForestRegression(object):
         # make predictions
         predictScores = clf.predict(validationData)
         predictScores = map(round, predictScores)
-        
-        return predictScores
+        predictScores = map(int, predictScores) 
+        return predictScores, validationScore
 
+
+    def evaluatPredictions(self, essaySetNumber):
+        """Make evaluations on predictions"""
+        prediction, trueScore = self.randomForestRegressionModel(essaySetNumber) 
+        return quadratic_weighted_kappa(trueScore, prediction)
 
 if __name__ == '__main__':
     rf = randomForestRegression("essaySet1.csv", "validEssaySet1.csv", "validationScores.pkl")
-    print rf.randomForestRegressionModel(1)
+    print rf.evaluatPredictions(1)
