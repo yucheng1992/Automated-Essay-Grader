@@ -47,8 +47,9 @@ class randomForestRegression(object):
         trainingData, validationData = self.readTrainingValidationData()
         validationScore = self.readVaidationScores(essaySetNumber)
         trainingScore = trainingData["score"]
-        trainingData = trainingData.drop("score", 1)
-       
+        trainingData = trainingData.drop(["Unamed: 0", "score"], 1)
+        validationData = validationData.drop("Unmaed: 0", 1)
+
         # train model
         clf = RandomForestRegressor()
         clf = clf.fit(trainingData, trainingScore)
