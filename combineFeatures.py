@@ -11,13 +11,17 @@ class combineFeatures():
     """Combine all the necessary features for every article."""
     
     def __init__(self):
-        self.spellcheckerFileName = "bigram.pkl"
-        self.posFileName = "featuresPosEssaySet"
-        self.wordsFileName = "featureWordsEssaySet"
-        self.missSpellFileName = "missSpellingCount.pkl"
-        self.dataFileName = "valid_set.tsv"
-        self.wordNumber, self.sentenceNumber, self.averageWordLength, self.clauseWordNumber = self.readFeaturesFromParseArticle()
-        # self.posData, self.missSpellData = self.readFile()
+        self.posTrainFileName = "featuresPosEssaySet"
+        self.wordsTrainFileName = "featureWordsEssaySet"
+        self.missSpellTrainFileName = "missSpellingCount.pkl"
+        self.dataTrainFileName = "training_set_rel3.tsv"
+
+        self.posTestFileName = "testFeaturesPosEssaySet"
+        self.wordsTestFileName = "testFeatureWordsEssaySet"
+        self.missSpellTestFileName = "misspelling_count.pkl"
+        self.dataTestFileName = "valid_set.tsv"
+        self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber = self.readFeaturesFromParseArticle(0)
+        self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber = self.readFeaturesFromParseArticle(1)
 
     
     def returnDomain1Score(self, essaySetNumber):
@@ -26,7 +30,7 @@ class combineFeatures():
         df = pd.DataFrame
 
         try:
-            df = pd.DataFrame.from_csv(self.dataFileName, sep="\t")
+            df = pd.DataFrame.from_csv(self.dataTrainFileName, sep="\t")
         except Exception:
             print "Cannot open the data file due to the exception:", sys.exc_info()[0]
         
@@ -35,53 +39,87 @@ class combineFeatures():
         return df[mask]["domain1_score"].tolist()
 
 
-    def readFile(self, essaySetNumber):
+    def readTrainFile(self, essaySetNumber):
         """Read data from specific files"""
         try:
-            # fSpell = open(self.spellcheckerFileName, "rb")
-            # spellData = pickle.load(fSpell)
             print "============Loading essay set%d's features from file============" %(essaySetNumber)    
-            fileName = self.posFileName + str(essaySetNumber) + ".pkl"
-
+            fileName = self.posTrainFileName + str(essaySetNumber) + ".pkl"
+            wordsFileName = self.wordsTrainFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
             posData = pickle.load(fPos)
 
-            fMiss = open(self.missSpellFileName, "rb")
+            fMiss = open(self.missSpellTrainFileName, "rb")
             missData = pickle.load(fMiss)
-            # fWords = open(self.wordsFileName, "rb")
-            # wordsData = pickle.load(fWords)
+            fWords = open(wordsFileName, "rb")
+            wordsData = pickle.load(fWords)
             print "============Essay set%d's features have been loaded!===========" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
             print e
             raise
-        return posData, missData
+        return posData, missData, wordsData
+
+
+    def readTestFile(self, essaySetNumber):
+        """Read data from specific files"""
+        try:
+            # fSpell = open(self.spellcheckerFileName, "rb")
+            # spellData = pickle.load(fSpell)
+            print "============Loading essay set%d's features from file============" %(essaySetNumber)    
+            fileName = self.posTestFileName + str(essaySetNumber) + ".pkl"
+            wordsFileName = self.wordsTestFileName + str(essaySetNumber) + ".pkl"
+            fPos = open(fileName, "rb")
+            posData = pickle.load(fPos)
+
+            fMiss = open(self.missSpellTestFileName, "rb")
+            missData = pickle.load(fMiss)
+            fWords = open(wordsFileName, "rb")
+            wordsData = pickle.load(fWords)
+            print "============Essay set%d's features have been loaded!===========" %(essaySetNumber)
+            
+        except Exception, e:
+            print "Cannot open file due to the exception: "
+            print e
+            raise
+        
+        return posData, missData, wordsData
 
     
-    def readFeaturesFromParseArticle(self):
+    def readFeaturesFromParseArticle(self, isTrainOrTest):
         """read all the features from parseArticle"""
-        
-        articleFeatures = parseArticle()
+         
+        articleFeatures = parseArticle(isTrainOrTest)
         return articleFeatures.generateFeatures()
 
 
-    def combineAllFeatures(self, essaySetNumber, missDataStartIndex):
+    def combineAllFeatures(self, essaySetNumber, missDataStartIndex, isTrain=1):
         """combine all the articless features together"""
-        
-        scores = self.returnDomain1Score(essaySetNumber)
-        posData, missData = self.readFile(essaySetNumber) 
+        if isTrain == 1:
+            scores = self.returnDomain1Score(essaySetNumber)
+            posData, missData, wordsData = self.readTrainFile(essaySetNumber) 
+        else:
+            posData, missData, wordsData = self.readTestFile(essaySetNumber)
         combineData = []
         j = missDataStartIndex
         for i in range(len(posData)):
-            # featureCounter = self.posData[i] + self.wordsData[i]
-            featureCounter = posData[i]
-            featureCounter["wordNumber"] = self.wordNumber[essaySetNumber-1][i]
-            featureCounter["sentenceNumber"] = self.sentenceNumber[essaySetNumber-1][i]
-            featureCounter["averageWordLength"] = self.averageWordLength[essaySetNumber-1][i]
-            featureCounter["clauseWordNumber"] = self.clauseWordNumber[essaySetNumber-1][i]
-            featureCounter["missSpelling"] = missData[j]
-            featureCounter["score"] = scores[i]
+            featureCounter = posData[i] + wordsData[i]
+            if isTrain == 1:
+                featureCounter["wordNumber"] = self.trainWordNumber[essaySetNumber-1][i]
+                featureCounter["sentenceNumber"] = self.trainSentenceNumber[essaySetNumber-1][i]
+                featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
+                featureCounter["clauseWordNumber"] = self.trainClauseWordNumber[essaySetNumber-1][i]
+                featureCounter["missSpelling"] = missData[j]
+            else:
+                featureCounter["wordNumber"] = self.testWordNumber[essaySetNumber-1][i]
+                featureCounter["sentenceNumber"] = self.testSentenceNumber[essaySetNumber-1][i]
+                featureCounter["averageWordLength"] = self.testAverageWordLength[essaySetNumber-1][i]
+                featureCounter["clauseWordNumber"] = self.testClauseWordNumber[essaySetNumber-1][i]
+                featureCounter["missSpelling"] = missData[j]
+            
+            if isTrain == 1:
+                featureCounter["score"] = scores[i]
+            
             combineData.append(featureCounter)
             j = j + 1
         return combineData, j
@@ -89,27 +127,36 @@ class combineFeatures():
 
     def writeToCsv(self):
         """write the combined features to a csv file"""
-        missDataStartIdx = 0
+        missDataStartTrainIdx = 0
+        missDataStartTestIdx = 0
         for i in range(1, 9):
             print "============Combining essay set%d's features============" %(i)
-            features, j = self.combineAllFeatures(i, missDataStartIdx)
+            trainFeatures, j = self.combineAllFeatures(i, missDataStartTrainIdx)
+            testFeatures, k = self.combineAllFeatures(i, missDataStartTestIdx, 0)
+
             print "============Essay set%d's features have been combined!============" %(i)
             print 
             
-            missDataStartIdx = j
+            missDataStartTrainIdx = j
+            missDataStartTestIdx = k
 
             totalCounter = Counter()
 
-            for feature in features:
+            for feature in trainFeatures:
                 totalCounter = increment2(totalCounter, 0, feature)
+            for feature in testFeatures:
+                totalCounter = increment2(totalCounter , 0, feature)
             
-            for feature in features:
+            for feature in trainFeatures:
+                feature = increment2(feature, 1, totalCounter)
+            for feature in testFeatures:
                 feature = increment2(feature, 1, totalCounter)
             
-            df = pd.DataFrame(features)
-            
+            dfTrain = pd.DataFrame(trainFeatures)
+            dfTest = pd.DataFrame(testFeatures)
             print "============Writing essay set%d's features to csv file============" %(i)
-            df.to_csv("validEssaySet{}.csv".format(i))
+            dfTrain.to_csv("trainingEssaySet{}.csv".format(i))
+            dfTest.to_csv("testingEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
        

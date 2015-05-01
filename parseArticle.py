@@ -5,23 +5,27 @@ import sys
 
 class parseArticle():
     '''This is a class built for generating features from all the articles.''' 
-    def __init__(self):
+    def __init__(self, isTrainOrTest):
         """initiate the class"""
-        self.dataFileName = "training_set_rel3.tsv"
+        self.isTrainOrTest = isTrainOrTest
+        self.trainDataFileName = "training_set_rel3.tsv"
+        self.testDataFileName = "valid_set.tsv"
         self.stopWordsFileName = "stopWords.txt"
         self.clauseWordsList = ["which", "where", "what", "why", "who"]
-        self.article = self.parseTsvFile()["essay"]
-        self.file = self.parseTsvFile()
+        self.trainArticle = self.parseTsvFile(self.trainDataFileName)["essay"]
+        self.trainFile = self.parseTsvFile(self.trainDataFileName)
+        self.testArticle = self.parseTsvFile(self.testDataFileName)["essay"]
+        self.testFile = self.parseTsvFile(self.testDataFileName)
         self.stopWords = self.readStopWords()
 
 
-    def parseTsvFile(self):
+    def parseTsvFile(self, fileName):
         '''Read the essays from the tsv file ans return a dataframe containing all the essays.'''
     
         df = pd.DataFrame
     
         try:
-            df = pd.DataFrame.from_csv(self.dataFileName, sep="\t")
+            df = pd.DataFrame.from_csv(fileName, sep="\t")
         except Exception:
             print "Cannot open the file due to exception", sys.exc_info()[0]
         
@@ -84,6 +88,7 @@ class parseArticle():
                 num += 1
         return num
 
+
     def generateFeatures(self):
         """generate necessary features for all the articles"""
         totalWordNumber = []
@@ -91,10 +96,12 @@ class parseArticle():
         totalAverageWordLength = []
         totalClauseWordNumber = []
         for i in range(1, 9):
-            
-            mask = self.file["essay_set"] == i
-            essaySet = self.file[mask]["essay"]
-            
+            if self.isTrainOrTest == 1:
+                mask = self.trainFile["essay_set"] == i
+                essaySet = self.trainFile[mask]["essay"]
+            else:
+                mask = self.testFile["essay_set"] == i
+                essaySet = self.testFile[mask]["essay"]
             wordNumber = []
             sentenceNumber = []
             averageWordLength = []
@@ -113,6 +120,5 @@ class parseArticle():
 
 
 if __name__ == "__main__":
-    articleFeatures = parseArticle()
+    articleFeatures = parseArticle(1)
     wordNumber, sentenceNumber, averageWordLength, clauseWordNumber = articleFeatures.generateFeatures()
-    # print wordNumber[1]
