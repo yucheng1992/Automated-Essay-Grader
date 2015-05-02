@@ -5,6 +5,7 @@ import sys
 
 class parseArticle():
     '''This is a class built for generating features from all the articles.''' 
+
     def __init__(self, isTrainOrTest):
         """initiate the class"""
         self.isTrainOrTest = isTrainOrTest
