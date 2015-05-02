@@ -5,6 +5,8 @@ from parseArticle import *
 from collections import Counter
 from util import *
 from operator import itemgetter
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 
 
 class combineFeatures():
@@ -20,8 +22,8 @@ class combineFeatures():
         self.wordsTestFileName = "testFeatureWordsEssaySet"
         self.missSpellTestFileName = "misspelling_count.pkl"
         self.dataTestFileName = "valid_set.tsv"
-        self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber = self.readFeaturesFromParseArticle(0)
-        self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber = self.readFeaturesFromParseArticle(1)
+        self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testFeature, self.testTfidf = self.readFeaturesFromParseArticle(0)
+        self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf = self.readFeaturesFromParseArticle(1)
 
     
     def returnDomain1Score(self, essaySetNumber):
@@ -42,7 +44,9 @@ class combineFeatures():
     def readTrainFile(self, essaySetNumber):
         """Read data from specific files"""
         try:
-            print "============Loading essay set%d's features from file============" %(essaySetNumber)    
+            # fSpell = open(self.spellcheckerFileName, "rb")
+            # spellData = pickle.load(fSpell)
+            print "============Loading training Essay set%d's features from file============" %(essaySetNumber)    
             fileName = self.posTrainFileName + str(essaySetNumber) + ".pkl"
             wordsFileName = self.wordsTrainFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
@@ -52,7 +56,7 @@ class combineFeatures():
             missData = pickle.load(fMiss)
             fWords = open(wordsFileName, "rb")
             wordsData = pickle.load(fWords)
-            print "============Essay set%d's features have been loaded!===========" %(essaySetNumber)
+            print "============Training Essay set%d's features have been loaded!===========" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
@@ -66,7 +70,7 @@ class combineFeatures():
         try:
             # fSpell = open(self.spellcheckerFileName, "rb")
             # spellData = pickle.load(fSpell)
-            print "============Loading essay set%d's features from file============" %(essaySetNumber)    
+            print "============Loading testing Essay set%d's features from file============" %(essaySetNumber)    
             fileName = self.posTestFileName + str(essaySetNumber) + ".pkl"
             wordsFileName = self.wordsTestFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
@@ -76,13 +80,12 @@ class combineFeatures():
             missData = pickle.load(fMiss)
             fWords = open(wordsFileName, "rb")
             wordsData = pickle.load(fWords)
-            print "============Essay set%d's features have been loaded!===========" %(essaySetNumber)
+            print "============Testing Essay set%d's features have been loaded!===========" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
             print e
             raise
-        
         return posData, missData, wordsData
 
     
@@ -103,14 +106,19 @@ class combineFeatures():
         combineData = []
         j = missDataStartIndex
         for i in range(len(posData)):
-            featureCounter = posData[i] + wordsData[i]
+            featureCounter = posData[i]# + wordsData[i]
+            
             if isTrain == 1:
+                dictionary = dict(zip(self.trainFeature, self.trainTfidf))
+                featureCounter += dictionary
                 featureCounter["wordNumber"] = self.trainWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.trainSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.trainClauseWordNumber[essaySetNumber-1][i]
                 featureCounter["missSpelling"] = missData[j]
             else:
+                dictionary = dict(zip(self.trainFeature, self.testTfidf))
+                featureCounter += dictionary
                 featureCounter["wordNumber"] = self.testWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.testSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.testAverageWordLength[essaySetNumber-1][i]
@@ -122,6 +130,8 @@ class combineFeatures():
             
             combineData.append(featureCounter)
             j = j + 1
+        transformer = TfidfTransformer()
+        
         return combineData, j
 
 
@@ -135,7 +145,6 @@ class combineFeatures():
             testFeatures, k = self.combineAllFeatures(i, missDataStartTestIdx, 0)
 
             print "============Essay set%d's features have been combined!============" %(i)
-            print 
             
             missDataStartTrainIdx = j
             missDataStartTestIdx = k

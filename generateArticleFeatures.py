@@ -2,10 +2,12 @@ import csv
 import pandas as pd
 import re
 import sys
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
 
 class parseArticle():
     '''This is a class built for generating features from all the articles.''' 
-
     def __init__(self, isTrainOrTest):
         """initiate the class"""
         self.isTrainOrTest = isTrainOrTest
@@ -89,20 +91,31 @@ class parseArticle():
                 num += 1
         return num
 
-
     def generateFeatures(self):
         """generate necessary features for all the articles"""
         totalWordNumber = []
         totalSentenceNumber = []
         totalAverageWordLength = []
         totalClauseWordNumber = []
+        totalFeature = []
+        totalTfidf = []
         for i in range(1, 9):
+            
             if self.isTrainOrTest == 1:
                 mask = self.trainFile["essay_set"] == i
                 essaySet = self.trainFile[mask]["essay"]
             else:
                 mask = self.testFile["essay_set"] == i
                 essaySet = self.testFile[mask]["essay"]
+             
+            vectorizer = CountVectorizer(decode_error="ignore", stop_words=self.stopWords)
+            X = vectorizer.fit_transform(essaySet.tolist())
+            transformer = TfidfTransformer()
+            tfidf = transformer.fit_transform(X.toarray())
+            
+            totalFeature.append(vectorizer.get_feature_names())
+            totalTfidf.append(tfidf.toarray())
+            
             wordNumber = []
             sentenceNumber = []
             averageWordLength = []
@@ -117,9 +130,9 @@ class parseArticle():
             totalAverageWordLength.append(averageWordLength)
             totalClauseWordNumber.append(clauseWordNumber)
 
-        return totalWordNumber, totalSentenceNumber, totalAverageWordLength, totalClauseWordNumber
+        return totalWordNumber, totalSentenceNumber, totalAverageWordLength, totalClauseWordNumber, totalFeature, totalTfidf
 
 
 if __name__ == "__main__":
     articleFeatures = parseArticle(1)
-    wordNumber, sentenceNumber, averageWordLength, clauseWordNumber = articleFeatures.generateFeatures()
+    wordNumber, sentenceNumber, averageWordLength, clauseWordNumber, feature, tdidf = articleFeatures.generateFeatures()
