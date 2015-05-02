@@ -44,9 +44,7 @@ class combineFeatures():
     def readTrainFile(self, essaySetNumber):
         """Read data from specific files"""
         try:
-            # fSpell = open(self.spellcheckerFileName, "rb")
-            # spellData = pickle.load(fSpell)
-            print "============Loading training Essay set%d's features from file============" %(essaySetNumber)    
+            print "==============Loading training Essay set%d's features from file==============" %(essaySetNumber)    
             fileName = self.posTrainFileName + str(essaySetNumber) + ".pkl"
             wordsFileName = self.wordsTrainFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
@@ -56,7 +54,7 @@ class combineFeatures():
             missData = pickle.load(fMiss)
             fWords = open(wordsFileName, "rb")
             wordsData = pickle.load(fWords)
-            print "============Training Essay set%d's features have been loaded!===========" %(essaySetNumber)
+            print "===============Training Essay set%d's features have been loaded!=============" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
@@ -68,9 +66,7 @@ class combineFeatures():
     def readTestFile(self, essaySetNumber):
         """Read data from specific files"""
         try:
-            # fSpell = open(self.spellcheckerFileName, "rb")
-            # spellData = pickle.load(fSpell)
-            print "============Loading testing Essay set%d's features from file============" %(essaySetNumber)    
+            print "===============Loading testing Essay set%d's features from file==============" %(essaySetNumber)
             fileName = self.posTestFileName + str(essaySetNumber) + ".pkl"
             wordsFileName = self.wordsTestFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
@@ -80,7 +76,7 @@ class combineFeatures():
             missData = pickle.load(fMiss)
             fWords = open(wordsFileName, "rb")
             wordsData = pickle.load(fWords)
-            print "============Testing Essay set%d's features have been loaded!===========" %(essaySetNumber)
+            print "===============Testing Essay set%d's features have been loaded!==============" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
@@ -140,11 +136,11 @@ class combineFeatures():
         missDataStartTrainIdx = 0
         missDataStartTestIdx = 0
         for i in range(1, 9):
-            print "============Combining essay set%d's features============" %(i)
+            print "======================Combining essay set%d's features=======================" %(i)
             trainFeatures, j = self.combineAllFeatures(i, missDataStartTrainIdx)
             testFeatures, k = self.combineAllFeatures(i, missDataStartTestIdx, 0)
 
-            print "============Essay set%d's features have been combined!============" %(i)
+            print "=================Essay set%d's features have been combined!==================" %(i)
             
             missDataStartTrainIdx = j
             missDataStartTestIdx = k
@@ -163,7 +159,7 @@ class combineFeatures():
             
             dfTrain = pd.DataFrame(trainFeatures)
             dfTest = pd.DataFrame(testFeatures)
-            print "============Writing essay set%d's features to csv file============" %(i)
+            print "=================Writing essay set%d's features to csv file==================" %(i)
             dfTrain.to_csv("trainingEssaySet{}.csv".format(i))
             dfTest.to_csv("testingEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)

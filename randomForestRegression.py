@@ -4,6 +4,7 @@ import pickle
 from sklearn.ensemble import RandomForestRegressor
 from score import quadratic_weighted_kappa
 
+
 class randomForestRegression(object):
     """Use random forest regression model to train the data and make predictions on the validation data"""
     
