@@ -68,5 +68,9 @@ class randomForestRegression(object):
         return quadratic_weighted_kappa(trueScore, prediction)
 
 if __name__ == '__main__':
-    rf = randomForestRegression("essaySet1.csv", "validEssaySet1.csv", "validationScores.pkl")
-    print rf.evaluatPredictions(1)
+    for i in range(1, 9):
+        trainingFile = "trainingTfidfEssaySet" + str(i) + ".csv"
+        testingFile = "testingTfidfEssaySet" + str(i) + ".csv"
+        scoreFile = "validationScores.pkl"
+        rf = randomForestRegression(trainingFile, testingFile, scoreFile)
+        print rf.evaluatPredictions(1)
