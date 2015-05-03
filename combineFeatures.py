@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-from parseArticle import *
+from generateArticleFeatures import *
 from collections import Counter
 from util import *
 from operator import itemgetter
@@ -22,8 +22,8 @@ class combineFeatures():
         self.wordsTestFileName = "testFeatureWordsEssaySet"
         self.missSpellTestFileName = "misspelling_count.pkl"
         self.dataTestFileName = "valid_set.tsv"
-        self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testFeature, self.testTfidf = self.readFeaturesFromParseArticle(0)
-        self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf = self.readFeaturesFromParseArticle(1)
+        
+        self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf, self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testTfidf = self.readFeaturesFromGenerateArticleFeatures()
 
     
     def returnDomain1Score(self, essaySetNumber):
@@ -85,10 +85,10 @@ class combineFeatures():
         return posData, missData, wordsData
 
     
-    def readFeaturesFromParseArticle(self, isTrainOrTest):
+    def readFeaturesFromGenerateArticleFeatures(self):
         """read all the features from parseArticle"""
          
-        articleFeatures = parseArticle(isTrainOrTest)
+        articleFeatures = generateArticleFeatures()
         return articleFeatures.generateFeatures()
 
 
@@ -102,27 +102,25 @@ class combineFeatures():
         combineData = []
         j = missDataStartIndex
         for i in range(len(posData)):
-            featureCounter = posData[i]# + wordsData[i]
-            
             if isTrain == 1:
-                dictionary = dict(zip(self.trainFeature, self.trainTfidf))
-                featureCounter += dictionary
+                dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.trainTfidf[essaySetNumber-1][i]))
+                dictionary = Counter(dictionary)
+                featureCounter = posData[i] + dictionary
                 featureCounter["wordNumber"] = self.trainWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.trainSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.trainClauseWordNumber[essaySetNumber-1][i]
                 featureCounter["missSpelling"] = missData[j]
+                featureCounter["score"] = scores[i]
             else:
-                dictionary = dict(zip(self.trainFeature, self.testTfidf))
-                featureCounter += dictionary
+                dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.testTfidf[essaySetNumber-1][i]))
+                dictionary = Counter(dictionary)
+                featureCounter = posData[i] + dictionary
                 featureCounter["wordNumber"] = self.testWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.testSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.testAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.testClauseWordNumber[essaySetNumber-1][i]
                 featureCounter["missSpelling"] = missData[j]
-            
-            if isTrain == 1:
-                featureCounter["score"] = scores[i]
             
             combineData.append(featureCounter)
             j = j + 1
@@ -160,8 +158,8 @@ class combineFeatures():
             dfTrain = pd.DataFrame(trainFeatures)
             dfTest = pd.DataFrame(testFeatures)
             print "=================Writing essay set%d's features to csv file==================" %(i)
-            dfTrain.to_csv("trainingEssaySet{}.csv".format(i))
-            dfTest.to_csv("testingEssaySet{}.csv".format(i))
+            dfTrain.to_csv("trainingTfidfEssaySet{}.csv".format(i))
+            dfTest.to_csv("testingTfidfEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
        
