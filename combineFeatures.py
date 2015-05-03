@@ -151,9 +151,9 @@ class combineFeatures():
                 totalCounter = increment2(totalCounter , 0, feature)
             
             for feature in trainFeatures:
-                feature = increment2(feature, 1, totalCounter)
+                feature = increment(feature, 1, totalCounter)
             for feature in testFeatures:
-                feature = increment2(feature, 1, totalCounter)
+                feature = increment(feature, 1, totalCounter)
             
             dfTrain = pd.DataFrame(trainFeatures)
             dfTest = pd.DataFrame(testFeatures)

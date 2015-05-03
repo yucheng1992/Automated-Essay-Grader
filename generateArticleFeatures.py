@@ -127,8 +127,6 @@ class generateArticleFeatures():
             transformer.fit(testX.toarray())
             testTfidf = transformer.transform(testX.toarray()).toarray()
                 
-            print len(trainTfidf[0]), len(testTfidf[0])
-
             trainTotalFeature.append(vectorizer.get_feature_names())
             trainTotalTfidf.append(trainTfidf)
             testTotalTfidf.append(testTfidf)
