@@ -6,11 +6,11 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
 
-class parseArticle():
+class generateArticleFeatures():
     '''This is a class built for generating features from all the articles.''' 
-    def __init__(self, isTrainOrTest):
+    
+    def __init__(self):
         """initiate the class"""
-        self.isTrainOrTest = isTrainOrTest
         self.trainDataFileName = "training_set_rel3.tsv"
         self.testDataFileName = "valid_set.tsv"
         self.stopWordsFileName = "stopWords.txt"
@@ -93,46 +93,77 @@ class parseArticle():
 
     def generateFeatures(self):
         """generate necessary features for all the articles"""
-        totalWordNumber = []
-        totalSentenceNumber = []
-        totalAverageWordLength = []
-        totalClauseWordNumber = []
-        totalFeature = []
-        totalTfidf = []
+        
+        trainTotalWordNumber = []
+        trainTotalSentenceNumber = []
+        trainTotalAverageWordLength = []
+        trainTotalClauseWordNumber = []
+        trainTotalFeature = []
+        trainTotalTfidf = []
+
+        testTotalWordNumber = []
+        testTotalSentenceNumber = []
+        testTotalAverageWordLength = []
+        testTotalClauseWordNumber = []
+        testTotalFeature = []
+        testTotalTfidf = []
+        
         for i in range(1, 9):
             
-            if self.isTrainOrTest == 1:
-                mask = self.trainFile["essay_set"] == i
-                essaySet = self.trainFile[mask]["essay"]
-            else:
-                mask = self.testFile["essay_set"] == i
-                essaySet = self.testFile[mask]["essay"]
+            trainMask = self.trainFile["essay_set"] == i
+            trainEssaySet = self.trainFile[trainMask]["essay"]
+            
+            testMask = self.testFile["essay_set"] == i
+            testEssaySet = self.testFile[testMask]["essay"]
              
             vectorizer = CountVectorizer(decode_error="ignore", stop_words=self.stopWords)
-            X = vectorizer.fit_transform(essaySet.tolist())
-            transformer = TfidfTransformer()
-            tfidf = transformer.fit_transform(X.toarray())
             
-            totalFeature.append(vectorizer.get_feature_names())
-            totalTfidf.append(tfidf.toarray())
+            trainX = vectorizer.fit_transform(trainEssaySet.tolist())
+            testX = vectorizer.transform(testEssaySet.tolist())
+
+            transformer = TfidfTransformer()
+            transformer.fit(trainX.toarray())
+            trainTfidf = transformer.transform(trainX.toarray()).toarray()
+            transformer.fit(testX.toarray())
+            testTfidf = transformer.transform(testX.toarray()).toarray()
+                
+            print len(trainTfidf[0]), len(testTfidf[0])
+
+            trainTotalFeature.append(vectorizer.get_feature_names())
+            trainTotalTfidf.append(trainTfidf)
+            testTotalTfidf.append(testTfidf)
             
             wordNumber = []
             sentenceNumber = []
             averageWordLength = []
             clauseWordNumber = []
-            for essay in essaySet:
+            for essay in trainEssaySet:
                 wordNumber.append(self.countWord(self.deleteStopWords(essay)))
                 sentenceNumber.append(self.countSentence(essay))
                 averageWordLength.append(self.countAverageWordLength(self.deleteStopWords(essay)))
                 clauseWordNumber.append(self.countClauseWord(essay))
-            totalWordNumber.append(wordNumber)
-            totalSentenceNumber.append(sentenceNumber)
-            totalAverageWordLength.append(averageWordLength)
-            totalClauseWordNumber.append(clauseWordNumber)
+            trainTotalWordNumber.append(wordNumber)
+            trainTotalSentenceNumber.append(sentenceNumber)
+            trainTotalAverageWordLength.append(averageWordLength)
+            trainTotalClauseWordNumber.append(clauseWordNumber)
+            
+            wordNumber = []
+            sentenceNumber = []
+            averageWordLength = []
+            clauseWordNumber = []
+            for essay in testEssaySet:
+                wordNumber.append(self.countWord(self.deleteStopWords(essay)))
+                sentenceNumber.append(self.countSentence(essay))
+                averageWordLength.append(self.countAverageWordLength(self.deleteStopWords(essay)))
+                clauseWordNumber.append(self.countClauseWord(essay))
+            testTotalWordNumber.append(wordNumber)
+            testTotalSentenceNumber.append(sentenceNumber)
+            testTotalAverageWordLength.append(averageWordLength)
+            testTotalClauseWordNumber.append(clauseWordNumber)
 
-        return totalWordNumber, totalSentenceNumber, totalAverageWordLength, totalClauseWordNumber, totalFeature, totalTfidf
+        return trainTotalWordNumber, trainTotalSentenceNumber, trainTotalAverageWordLength, trainTotalClauseWordNumber, trainTotalFeature, trainTotalTfidf, testTotalWordNumber, testTotalSentenceNumber, testTotalAverageWordLength, testTotalClauseWordNumber, testTotalFeature
 
 
-if __name__ == "__main__":
-    articleFeatures = parseArticle(1)
-    wordNumber, sentenceNumber, averageWordLength, clauseWordNumber, feature, tdidf = articleFeatures.generateFeatures()
+if __name__ == '__main__':
+    features = generateArticleFeatures()
+    features.generateFeatures()
