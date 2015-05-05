@@ -115,16 +115,23 @@ class generateArticleFeatures():
             
             testMask = self.testFile["essay_set"] == i
             testEssaySet = self.testFile[testMask]["essay"]
-             
-            vectorizer = CountVectorizer(decode_error="ignore", stop_words=self.stopWords)
             
+            vectorizer = CountVectorizer(decode_error="ignore", stop_words=self.stopWords)
+            print "============================Transforming EssaySet%d's training articles to word vectors==========================" %i
             trainX = vectorizer.fit_transform(trainEssaySet.tolist())
+            print "=======================EssaySet%d's training articles have been transformed to word vectors======================" %i 
+            
+            print "============================Transforming EssaySet%d's testing articles to word vectors===========================" %i
             testX = vectorizer.transform(testEssaySet.tolist())
-
+            print "========================EssaySet%d's testing articles have been transformed to word vectors======================" %i
+            
             transformer = TfidfTransformer()
+            
+            print "=====================Transforming EssaySet%d's training articles' bag of words to td-idf vector==================" %i
             transformer.fit(trainX.toarray())
             trainTfidf = transformer.transform(trainX.toarray()).toarray()
             transformer.fit(testX.toarray())
+            print "==================EssaySet%d's training articles' bag of words have been tranformed to td-idf vector==============" %i
             testTfidf = transformer.transform(testX.toarray()).toarray()
                 
             trainTotalFeature.append(vectorizer.get_feature_names())

@@ -33,12 +33,29 @@ class combineFeatures():
 
         try:
             df = pd.DataFrame.from_csv(self.dataTrainFileName, sep="\t")
-        except Exception:
+        except Exception, e:
             print "Cannot open the data file due to the exception:", sys.exc_info()[0]
-        
+            raise e
+
         mask = df["essay_set"] == essaySetNumber
 
         return df[mask]["domain1_score"].tolist()
+
+    
+    def returnDomain2Score(self):
+        """select all the domain2 scores from the essay set2."""
+
+        df = pd.DataFrame
+
+        try:
+            df = pd.DataFrame.from_csv(self.dataTrainFileName, sep="\t")
+        except Exception, e:
+            print "Cannot open the train data file due to the exception:", sys.exc_info()[0]
+            raise e
+        
+        mask = df["essay_set"] == 2
+
+        return df[mask]["domain2_score"].tolist()
 
 
     def readTrainFile(self, essaySetNumber):
@@ -95,7 +112,9 @@ class combineFeatures():
     def combineAllFeatures(self, essaySetNumber, missDataStartIndex, isTrain=1):
         """combine all the articless features together"""
         if isTrain == 1:
-            scores = self.returnDomain1Score(essaySetNumber)
+            domainOneScores = self.returnDomain1Score(essaySetNumber)
+            if essaySetNumber == 2:
+                domainTwoScores = self.returnDomain2Score()
             posData, missData, wordsData = self.readTrainFile(essaySetNumber) 
         else:
             posData, missData, wordsData = self.readTestFile(essaySetNumber)
@@ -111,7 +130,9 @@ class combineFeatures():
                 featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.trainClauseWordNumber[essaySetNumber-1][i]
                 featureCounter["missSpelling"] = missData[j]
-                featureCounter["score"] = scores[i]
+                featureCounter["domain1_score"] = domainOneScores[i]
+                if essaySetNumber == 2:
+                    featureCounter["domain2_score"] = domainTwoScores[i]
             else:
                 dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.testTfidf[essaySetNumber-1][i]))
                 dictionary = Counter(dictionary)
@@ -146,9 +167,9 @@ class combineFeatures():
             totalCounter = Counter()
 
             for feature in trainFeatures:
-                totalCounter = increment2(totalCounter, 0, feature)
+                totalCounter = increment(totalCounter, 0, feature)
             for feature in testFeatures:
-                totalCounter = increment2(totalCounter , 0, feature)
+                totalCounter = increment(totalCounter , 0, feature)
             
             for feature in trainFeatures:
                 feature = increment(feature, 1, totalCounter)
