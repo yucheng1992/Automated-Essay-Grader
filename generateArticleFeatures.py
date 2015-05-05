@@ -116,7 +116,8 @@ class generateArticleFeatures():
             testMask = self.testFile["essay_set"] == i
             testEssaySet = self.testFile[testMask]["essay"]
             
-            vectorizer = CountVectorizer(decode_error="ignore", stop_words=self.stopWords)
+            vectorizer = CountVectorizer(decode_error="replace", strip_accents="ascii", stop_words=self.stopWords)
+            
             print "============================Transforming EssaySet%d's training articles to word vectors==========================" %i
             trainX = vectorizer.fit_transform(trainEssaySet.tolist())
             print "=======================EssaySet%d's training articles have been transformed to word vectors======================" %i 
@@ -127,13 +128,17 @@ class generateArticleFeatures():
             
             transformer = TfidfTransformer()
             
-            print "=====================Transforming EssaySet%d's training articles' bag of words to td-idf vector==================" %i
+            print "=====================Transforming EssaySet%d's training articles' bag of words to tf-idf vector==================" %i
             transformer.fit(trainX.toarray())
             trainTfidf = transformer.transform(trainX.toarray()).toarray()
             transformer.fit(testX.toarray())
-            print "==================EssaySet%d's training articles' bag of words have been tranformed to td-idf vector==============" %i
+            print "==================EssaySet%d's training articles' bag of words have been tranformed to tf-idf vector=============" %i
+            
+            print "=====================Transforming EssaySet%d's testing articles' bag of words to tf-idf vector===================" %i
             testTfidf = transformer.transform(testX.toarray()).toarray()
-                
+            print "==================EssaySet%d's training articles' bag of words have been tranformed to tf-idf vector=============" %i   
+            print
+
             trainTotalFeature.append(vectorizer.get_feature_names())
             trainTotalTfidf.append(trainTfidf)
             testTotalTfidf.append(testTfidf)
@@ -166,7 +171,7 @@ class generateArticleFeatures():
             testTotalAverageWordLength.append(averageWordLength)
             testTotalClauseWordNumber.append(clauseWordNumber)
 
-        return trainTotalWordNumber, trainTotalSentenceNumber, trainTotalAverageWordLength, trainTotalClauseWordNumber, trainTotalFeature, trainTotalTfidf, testTotalWordNumber, testTotalSentenceNumber, testTotalAverageWordLength, testTotalClauseWordNumber, testTotalFeature
+        return trainTotalWordNumber, trainTotalSentenceNumber, trainTotalAverageWordLength, trainTotalClauseWordNumber, trainTotalFeature, trainTotalTfidf, testTotalWordNumber, testTotalSentenceNumber, testTotalAverageWordLength, testTotalClauseWordNumber, testTotalTfidf
 
 
 if __name__ == '__main__':
