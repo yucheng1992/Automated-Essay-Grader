@@ -120,9 +120,12 @@ class combineFeatures():
             posData, missData, wordsData = self.readTestFile(essaySetNumber)
         combineData = []
         j = missDataStartIndex
+        print j
         for i in range(len(posData)):
             if isTrain == 1:
                 dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.trainTfidf[essaySetNumber-1][i]))
+                if essaySetNumber == 2:
+                    print i
                 dictionary = Counter(dictionary)
                 featureCounter = posData[i] + dictionary
                 featureCounter["wordNumber"] = self.trainWordNumber[essaySetNumber-1][i]

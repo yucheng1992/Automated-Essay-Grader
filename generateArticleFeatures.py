@@ -116,7 +116,7 @@ class generateArticleFeatures():
             testMask = self.testFile["essay_set"] == i
             testEssaySet = self.testFile[testMask]["essay"]
             
-            vectorizer = CountVectorizer(decode_error="replace", strip_accents="ascii", stop_words=self.stopWords)
+            vectorizer = CountVectorizer(decode_error="replace", strip_accents="unicode", stop_words=self.stopWords)
             
             print "============================Transforming EssaySet%d's training articles to word vectors==========================" %i
             trainX = vectorizer.fit_transform(trainEssaySet.tolist())
