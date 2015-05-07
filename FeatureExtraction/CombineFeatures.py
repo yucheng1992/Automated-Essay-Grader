@@ -19,12 +19,10 @@ class CombineFeatures():
         Initialize the CombineFeatures class.
         '''
         self.posTrainFileName = "../FeatureData/featuresPosEssaySet"
-        self.wordsTrainFileName = "../FeatureDatafeatureWordsEssaySet"
         self.missSpellTrainFileName = "../FeatureData/missSpellingCount.pkl"
         self.dataTrainFileName = "../FeatureData/training_set_rel3.tsv"
 
         self.posTestFileName = "../FeatureData/testFeaturesPosEssaySet"
-        self.wordsTestFileName = "../FeatureDatatestFeatureWordsEssaySet"
         self.missSpellTestFileName = "../FeatureData/misspelling_count.pkl"
         self.dataTestFileName = "../Data/valid_set.tsv"
         
@@ -81,21 +79,18 @@ class CombineFeatures():
         try:
             print "==============Loading training Essay set%d's features from file==============" %(essaySetNumber)    
             fileName = self.posTrainFileName + str(essaySetNumber) + ".pkl"
-            wordsFileName = self.wordsTrainFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
             posData = pickle.load(fPos)
 
             fMiss = open(self.missSpellTrainFileName, "rb")
             missData = pickle.load(fMiss)
-            fWords = open(wordsFileName, "rb")
-            wordsData = pickle.load(fWords)
             print "===============Training Essay set%d's features have been loaded!=============" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
             print e
             raise
-        return posData, missData, wordsData
+        return posData, missData
 
 
     def readTestFile(self, essaySetNumber):
@@ -109,21 +104,18 @@ class CombineFeatures():
         try:
             print "===============Loading testing Essay set%d's features from file==============" %(essaySetNumber)
             fileName = self.posTestFileName + str(essaySetNumber) + ".pkl"
-            wordsFileName = self.wordsTestFileName + str(essaySetNumber) + ".pkl"
             fPos = open(fileName, "rb")
             posData = pickle.load(fPos)
 
             fMiss = open(self.missSpellTestFileName, "rb")
             missData = pickle.load(fMiss)
-            fWords = open(wordsFileName, "rb")
-            wordsData = pickle.load(fWords)
             print "===============Testing Essay set%d's features have been loaded!==============" %(essaySetNumber)
             
         except Exception, e:
             print "Cannot open file due to the exception: "
             print e
             raise
-        return posData, missData, wordsData
+        return posData, missData
 
     
     def readFeaturesFromGenerateArticleFeatures(self):
@@ -149,9 +141,9 @@ class CombineFeatures():
             domainOneScores = self.returnDomainOneScore(essaySetNumber)
             if essaySetNumber == 2:
                 domainTwoScores = self.returnDomainTwoScore()
-            posData, misspellingData, wordsData = self.readTrainFile(essaySetNumber) 
+            posData, misspellingData = self.readTrainFile(essaySetNumber) 
         else:
-            posData, misspellingData, wordsData = self.readTestFile(essaySetNumber)
+            posData, misspellingData = self.readTestFile(essaySetNumber)
         combineData = []
         j = misspellingDataStartIndex
         print j

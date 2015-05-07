@@ -117,13 +117,11 @@ def main():
     test = pd.read_csv('Data/valid_set.tsv', sep='\t')
     print "=============================================Loading test data=============================================="
     for k in range(1, 9):
-        trainBagOfWordsList = []
         trainEssayList = []
         trainPosList = []
         maskTrain = train["essay_set"] == k
         partTrain = train[maskTrain]
 
-        testBagOfWordsList = []
         testEssayList = []
         testPosList = []
         maskTest = test["essay_set"] == k
@@ -134,7 +132,6 @@ def main():
             e = EssayInstance()
             e.construct_word_dict(essay)
             trainEssayList.append(e)
-            trainBagOfWordsList.append(e.word_dict)
             trainPosList.append(e.pos_tags)
         print "================Training Essay set%d's part of speech and bag of words have been generated============" %(k)
         print
@@ -144,14 +141,13 @@ def main():
             e = EssayInstance()
             e.construct_word_dict(essay)
             testEssayList.append(e)
-            testBagOfWordsList.append(e.word_dict)
             testPosList.append(e.pos_tags)
         print "==================Test Essay Set%d's part of speech and bag of words have been generated==============" %(k)
         print 
         
         print "================Writing Training Essay Set%d's part of speech and bag of words into csv file==========" %(k)
         try:
-            featurePos = open("../FeatureData/testFeaturesPosEssaySet{}.pkl".format(k), "wb")
+            featurePos = open("FeatureData/testFeaturesPosEssaySet{}.pkl".format(k), "wb")
             pickle.dump(trainPosList, featurePos)
             featurePos.close()
             
@@ -162,9 +158,9 @@ def main():
         print 
         print "=================Writing Test Essay Set%d's part of speech and bag of words into csv file=============" %(k)
         try:
-            featureWords = open("../FeatureData/testFeatureWordsEssaySet{}.pkl".format(k), "wb")
-            pickle.dump(trainBagOfWordsList, featureWords)
-            featureWords.close()
+            featurePos = open("FeatureData/testFeaturesEssaySet{}.pkl".format(k), "wb")
+            pickle.dump(testPosList, featurePos)
+            featurePos.close()
         except Exception:
             print  "Cannot write word_list into file due to the exception:", sys.exc_info()[0]
             raise
