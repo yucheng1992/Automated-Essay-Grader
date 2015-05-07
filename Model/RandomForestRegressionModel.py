@@ -1,5 +1,5 @@
 import sys
-sys.append("..")
+sys.path.append("..")
 import numpy as np
 import pandas as pd
 import pickle
@@ -130,7 +130,7 @@ class randomForestRegression(object):
 
 
 if __name__ == '__main__':
-    # Write the result into a file called ""MaximalKappaScores.txt"
+    # Write the result into a file called "RandomForestMaximalKappaScores.txt"
     f = open("../Result/RandomForestMaximalKappaScores.txt", "wb")
     for i in range(1, 9):
         train = "../TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
