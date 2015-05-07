@@ -34,7 +34,7 @@ class CombineFeatures():
     def returnDomainOneScore(self, essaySetNumber):
         """
         Select all the domain1 scores from the dataset.
-        @para   essaySetNumber: The number of the essay set.
+        @param  essaySetNumber: The number of the essay set.
         @return domainOneScore: The domain1_score of the training essay set.
         """
         
@@ -73,7 +73,7 @@ class CombineFeatures():
     def readTrainFile(self, essaySetNumber):
         """
         Read training data's part of speech, misspellings, bag of words from pkl files.
-        @para    essaySetNumber: The number of the training essay set.
+        @param   essaySetNumber: The number of the training essay set.
         @return  posData:   The training set's part of speech data.
                  missData:  The training set's misspellings data.
                  wordsData: The training set's bag of words data.
@@ -101,7 +101,7 @@ class CombineFeatures():
     def readTestFile(self, essaySetNumber):
         """
         Read testing data's part of speech, misspellings, bag of words from pkl files.
-        @para   essaySetNumber: The number of the testing essay set.
+        @param  essaySetNumber: The number of the testing essay set.
         @return posData:  The testing set's part of speech data.
                 missData: The testing set's misspellings data.
                 wordsData The testing set's bag of words data.
@@ -138,7 +138,7 @@ class CombineFeatures():
     def combineAllFeatures(self, essaySetNumber, misspellingDataStartIndex, isTrain=1):
         """
         Combine all the articless features together.
-        @para   essaySetNumber: The number of the essay set.
+        @param  essaySetNumber: The number of the essay set.
                 misspellingDataStartIndex: The start index of the misspelling data of this essay set.
                 isTrain: If isTrain is 1, this is a training set, and if isTrain is not 1, this is a test set.
         @return combineData: All the combined features of this essay set.
