@@ -18,13 +18,13 @@ class CombineFeatures():
         '''
         Initialize the CombineFeatures class.
         '''
-        self.posTrainFileName = "../FeatureData/featuresPosEssaySet"
-        self.missSpellTrainFileName = "../FeatureData/missSpellingCount.pkl"
-        self.dataTrainFileName = "../FeatureData/training_set_rel3.tsv"
+        self.posTrainFileName = "FeatureData/featuresPosEssaySet"
+        self.missSpellTrainFileName = "FeatureData/misspellingCountTrain.pkl"
+        self.dataTrainFileName = "FeatureData/training_set_rel3.tsv"
 
-        self.posTestFileName = "../FeatureData/testFeaturesPosEssaySet"
-        self.missSpellTestFileName = "../FeatureData/misspelling_count.pkl"
-        self.dataTestFileName = "../Data/valid_set.tsv"
+        self.posTestFileName = "FeatureData/testFeaturesPosEssaySet"
+        self.missSpellTestFileName = "FeatureData/misspellingCountValidate.pkl"
+        self.dataTestFileName = "Data/valid_set.tsv"
         
         self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf, self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testTfidf = self.readFeaturesFromGenerateArticleFeatures()
 
