@@ -9,13 +9,22 @@ class randomForestRegression(object):
     """Use random forest regression model to train the data and make predictions on the validation data"""
     
     def __init__(self, trainingFileName, validationFileName, validationScoreFileName):
-       self.trainingFileName = trainingFileName
-       self.validationFileName = validationFileName
-       self.validationScoreFileName = validationScoreFileName
+        '''
+        Initialize the random forest regression model.
+        @para trainingFileName:        The filename of the training file.
+              validationFileName:      The filename of the validation data.
+              validationScoreFileName: The filename of the validation data domain scores.
+        '''
+        self.trainingFileName = trainingFileName
+        self.validationFileName = validationFileName
+        self.validationScoreFileName = validationScoreFileName
 
 
     def readTrainingValidationData(self):
-        """Read training data and validation data from files"""
+        """
+        Read training data and validation data from files.
+        @return training data and validation data.
+        """
         try:
             trainingData = pd.read_csv(self.trainingFileName)
         except Exception, e:
@@ -32,19 +41,28 @@ class randomForestRegression(object):
 
 
     def readVaidationScores(self, essaySetNumber):
-        """Read validation scores from file"""
+        """
+        Read validation scores from file.
+        @para   essaySetNumber: The number of the essay set.
+        @return score:          A list containing the validation data domain score of the specific essay set number.
+        """
         
         try:
             score = open(self.validationScoreFileName, "rb")
             scoreData = pickle.load(score)
+            score = scoreData[essaySetNumber-1]
         except Exception, e:
             print "Cannot open the validation scores data due tp the exception:", e
             raise e
-        return scoreData[essaySetNumber-1]
+        return score
 
 
     def randomForestRegressionModel(self, essaySetNumber):
-        """Train the random forest model using the training data"""
+        """
+        Train the random forest model using the training data.
+        @para   essaySetNumber: The number of the essay set.
+        @return maxScore, maxDepth, minSplit, minLeaf: The maximal Kappa Score and the corresponding parameters.
+        """
         
         trainingData, validationData = self.readTrainingValidationData()
         if essaySetNumber != 2:
@@ -76,7 +94,7 @@ class randomForestRegression(object):
                     predictDomainOneScores = clf.predict(validationData)
                     predictDomainOneScores = map(round, predictDomainOneScores)
                     predictDomainOneScores = map(int, predictDomainOneScores) 
-                    score = quadratic_weighted_kappa(validationDomainOneScore, predictDomainOneScores)
+                    score = evaluatPredictions(validationDomainOneScore, predictDomainOneScores)
                     
                     if essaySetNumber == 2:
                         clf = RandomForestRegressor(max_depth=depth, min_samples_split=split, min_samples_leaf=leaf)
@@ -85,7 +103,7 @@ class randomForestRegression(object):
                         predictDomainTwoScores = clf.predict(validationData)
                         predictDomainTwoScores = map(round, predictDomainTwoScores)
                         predictDomainTwoScores = map(int, predictDomainTwoScores)
-                        score = (score + quadratic_weighted_kappa(validationDomainTwoScore, predictDomainTwoScores)) / 2.0
+                        score = (score + evaluatPredictions(validationDomainTwoScore, predictDomainTwoScores)) / 2.0
                     
                     if score > maxScore:
                         maxScore = score
@@ -96,14 +114,20 @@ class randomForestRegression(object):
         return  maxScore, maxDepth, minSplit, minLeaf
 
 
-    def evaluatPredictions(self, essaySetNumber):
-        """Make evaluations on predictions"""
-        max = self.randomForestRegressionModel(essaySetNumber) 
-        return max
-        # return quadratic_weighted_kappa(trueScore, prediction)
+    def evaluatPredictions(self, trueScores, predictScores):
+        """
+        Make evaluations on predictions
+        @para trueScore:     The actual scores of the validation data.
+              predictScores: The predicted scores that the model made on the validation data.
+        @return score: The corresponding Quadratic Weighted Kappa score.
+        """
+        score = quadratic_weighted_kappa(trueScores, predictScores)
+        return score
+
 
 if __name__ == '__main__':
-    f = open("maximalKappaScores.txt", "wb")
+    # Write the result into a file called ""MaximalKappaScores.txt"
+    f = open("MaximalKappaScores.txt", "wb")
     for i in range(1, 9):
         train = "trainingTfidfEssaySet" + str(i) + ".csv"
         test = "testingTfidfEssaySet" + str(i) + ".csv"
