@@ -116,13 +116,13 @@ class gradientBoostingRegressor(object):
         return  score
 
 
-if __name__ == '__main__':
+def main():
     # Write the result into a file called "GradientBoostingMaximalKappaScores.txt"
-    f = open("../Result/GradientBoostingMaximalKappaScores.txt", "wb")
+    f = open("Result/GradientBoostingMaximalKappaScores.txt", "wb")
     for i in range(1, 9):
-        train = "../TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
-        test = "../TestData/testingTfidfEssaySet" + str(i) + ".csv"
-        model = gradientBoostingRegressor(train, test, "../TestData/validationScores.pkl")
+        train = "TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
+        test = "TestData/testingTfidfEssaySet" + str(i) + ".csv"
+        model = gradientBoostingRegressor(train, test, "TestData/validationScores.pkl")
         score = model.gradientBoostingRegressor(i)
         f.write("Kappa score = %f \n" %(score))
         print 'Set {} done'.format(i)

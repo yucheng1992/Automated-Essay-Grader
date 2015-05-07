@@ -224,6 +224,7 @@ class CombineFeatures():
             print 
         return
         
-if __name__ == '__main__':
+
+def main():
     cf = CombineFeatures()
     cf.writeToCsv()

@@ -113,8 +113,8 @@ def decode(words):
 
 def main():
     print "===========================================Loading training data============================================"
-    train = pd.read_csv('../Data/training_set_rel3.tsv', sep='\t')
-    test = pd.read_csv('../Data/valid_set.tsv', sep='\t')
+    train = pd.read_csv('Data/training_set_rel3.tsv', sep='\t')
+    test = pd.read_csv('Data/valid_set.tsv', sep='\t')
     print "=============================================Loading test data=============================================="
     for k in range(1, 9):
         trainBagOfWordsList = []

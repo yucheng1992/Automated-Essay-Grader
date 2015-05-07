@@ -129,7 +129,7 @@ class randomForestRegression(object):
         return score
 
 
-if __name__ == '__main__':
+def main():
     # Write the result into a file called "RandomForestMaximalKappaScores.txt"
     f = open("../Result/RandomForestMaximalKappaScores.txt", "wb")
     for i in range(1, 9):
