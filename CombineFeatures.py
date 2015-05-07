@@ -223,5 +223,5 @@ class CombineFeatures():
         return
         
 if __name__ == '__main__':
-    cf = combineFeatures()
+    cf = CombineFeatures()
     cf.writeToCsv()

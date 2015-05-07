@@ -75,10 +75,11 @@ class randomForestRegression(object):
         maxDepth = 0
         minLeaf = 0
         minSplit = 0
-        
+
+        trainingDomainOneScore = trainingData["domain1_score"]
         trainingData = trainingData.drop(["Unnamed: 0", "domain1_score"], 1)
         validationData = validationData.drop(["Unnamed: 0", "domain1_score"], 1)
-        trainingDomainOneScore = trainingData["domain1_score"]
+        
         if essaySetNumber == 2:
             trainingDomainTwoScore = trainingData["domain2_score"]
             validationData = validationData.drop("domain2_score", 1)
@@ -94,7 +95,7 @@ class randomForestRegression(object):
                     predictDomainOneScores = clf.predict(validationData)
                     predictDomainOneScores = map(round, predictDomainOneScores)
                     predictDomainOneScores = map(int, predictDomainOneScores) 
-                    score = evaluatPredictions(validationDomainOneScore, predictDomainOneScores)
+                    score = self.evaluatPredictions(validationDomainOneScore, predictDomainOneScores)
                     
                     if essaySetNumber == 2:
                         clf = RandomForestRegressor(max_depth=depth, min_samples_split=split, min_samples_leaf=leaf)
@@ -103,7 +104,7 @@ class randomForestRegression(object):
                         predictDomainTwoScores = clf.predict(validationData)
                         predictDomainTwoScores = map(round, predictDomainTwoScores)
                         predictDomainTwoScores = map(int, predictDomainTwoScores)
-                        score = (score + evaluatPredictions(validationDomainTwoScore, predictDomainTwoScores)) / 2.0
+                        score = (score + self.evaluatPredictions(validationDomainTwoScore, predictDomainTwoScores)) / 2.0
                     
                     if score > maxScore:
                         maxScore = score
