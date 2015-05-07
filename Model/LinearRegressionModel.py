@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 import pickle 
 import numpy 
 import pandas as pd
@@ -75,8 +77,6 @@ if __name__ == '__main__':
     res_list.append(mean_kappa)
 
     #Write the result into a file called "LinearRegressionKappaScores.txt"
-    writer = csv.writer(open('../Result/LinearRegressionKappaScores.txt','wb'))
+    writer = csv.writer(open('Result/LinearRegressionKappaScores.txt','wb'))
     for item in res_list:
         writer.writerow([item])
-
-    
