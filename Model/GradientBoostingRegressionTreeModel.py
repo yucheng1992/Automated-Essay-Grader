@@ -122,7 +122,7 @@ if __name__ == '__main__':
     for i in range(1, 9):
         train = "../TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
         test = "../TestData/testingTfidfEssaySet" + str(i) + ".csv"
-        model = gradientBoostingRegressor(train, test, "validationScores.pkl")
+        model = gradientBoostingRegressor(train, test, "../TestData/validationScores.pkl")
         score = model.gradientBoostingRegressor(i)
         f.write("Kappa score = %f \n" %(score))
         print 'Set {} done'.format(i)

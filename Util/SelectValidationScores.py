@@ -10,8 +10,8 @@ class SelectValidationScores():
         '''
         Initialize the SelectValidationScores class
         '''
-        self.validationScoreFileName = "valid_sample_submission_1_column.csv" 
-        self.validationSetFileName = "valid_set.tsv"
+        self.validationScoreFileName = "../Data/valid_sample_submission_1_column.csv" 
+        self.validationSetFileName = "../Data/valid_set.tsv"
         self.scores = self.readValidationScore()
 
 
@@ -73,7 +73,7 @@ class SelectValidationScores():
         score = self.splitValidationScores()
 
         try:
-            scoreFile = open("validationScores.pkl", "wb")
+            scoreFile = open("../TestData/validationScores.pkl", "wb")
             pickle.dump(score, scoreFile)
             scoreFile.close()
         except Exception, e:
