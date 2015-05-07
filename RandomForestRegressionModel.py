@@ -82,6 +82,7 @@ class randomForestRegression(object):
         
         if essaySetNumber == 2:
             trainingDomainTwoScore = trainingData["domain2_score"]
+            trainingData = trainingData.drop("domain2_score", 1)
             validationData = validationData.drop("domain2_score", 1)
 
         # train model and select best parameters
