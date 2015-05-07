@@ -1,9 +1,11 @@
+import sys
+sys.path.append('..')
 import numpy as np
 import pandas as pd
 import pickle
 from GenerateArticleFeatures import *
 from collections import Counter
-from util import *
+from Util.util import *
 from operator import itemgetter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -16,15 +18,15 @@ class CombineFeatures():
         '''
         Initialize the CombineFeatures class.
         '''
-        self.posTrainFileName = "featuresPosEssaySet"
-        self.wordsTrainFileName = "featureWordsEssaySet"
-        self.missSpellTrainFileName = "missSpellingCount.pkl"
-        self.dataTrainFileName = "training_set_rel3.tsv"
+        self.posTrainFileName = "../FeatureData/featuresPosEssaySet"
+        self.wordsTrainFileName = "../FeatureDatafeatureWordsEssaySet"
+        self.missSpellTrainFileName = "../FeatureData/missSpellingCount.pkl"
+        self.dataTrainFileName = "../FeatureData/training_set_rel3.tsv"
 
-        self.posTestFileName = "testFeaturesPosEssaySet"
-        self.wordsTestFileName = "testFeatureWordsEssaySet"
-        self.missSpellTestFileName = "misspelling_count.pkl"
-        self.dataTestFileName = "valid_set.tsv"
+        self.posTestFileName = "../FeatureData/testFeaturesPosEssaySet"
+        self.wordsTestFileName = "../FeatureDatatestFeatureWordsEssaySet"
+        self.missSpellTestFileName = "../FeatureData/misspelling_count.pkl"
+        self.dataTestFileName = "../Data/valid_set.tsv"
         
         self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf, self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testTfidf = self.readFeaturesFromGenerateArticleFeatures()
 
@@ -216,8 +218,8 @@ class CombineFeatures():
             dfTrain = pd.DataFrame(trainFeatures)
             dfTest = pd.DataFrame(testFeatures)
             print "=================Writing essay set%d's features to csv file==================" %(i)
-            dfTrain.to_csv("trainingTfidfEssaySet{}.csv".format(i))
-            dfTest.to_csv("testingTfidfEssaySet{}.csv".format(i))
+            dfTrain.to_csv("../TrainingData/trainingTfidfEssaySet{}.csv".format(i))
+            dfTest.to_csv("../TestData/testingTfidfEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
         return

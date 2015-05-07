@@ -14,6 +14,8 @@ from nltk.tokenize import word_tokenize
 import csv
 import nltk
 nltk.download('maxent_treebank_pos_tagger')
+
+
 class EssayInstance:
     """
     Build the review class
@@ -105,7 +107,7 @@ def decode(words):
 
 
 def main():
-    train = pd.read_csv('training_set_rel3.tsv',sep='\t')
+    train = pd.read_csv('../Data/training_set_rel3.tsv',sep='\t')
     
     
     for k in range(1, 9):
@@ -116,7 +118,6 @@ def main():
         mask = train["essay_set"] == k
         partTrain = train[mask]
         for essay in partTrain['essay']:
-            print i
             e = EssayInstance()
             e.construct_word_dict(essay)
             essay_list.append(e)
@@ -129,7 +130,7 @@ def main():
             i.transform_to_tfidf(corpus.idf)
         
         try:
-            featurePos = open("featuresPosEssaySet{}.pkl".format(k), "wb")
+            featurePos = open("../FeatureData/featuresPosEssaySet{}.pkl".format(k), "wb")
             pickle.dump(pos_list, featurePos)
             featurePos.close()
         except Exception:
@@ -137,7 +138,7 @@ def main():
             raise
 
         try:
-            featureWords = open("featureWordsEssaySet{}.pkl".format(k), "wb")
+            featureWords = open("../FeatureData/featureWordsEssaySet{}.pkl".format(k), "wb")
             pickle.dump(bagofwords_list, featureWords)
             featureWords.close()
         except Exception:

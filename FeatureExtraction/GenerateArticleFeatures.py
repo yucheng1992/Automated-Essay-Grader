@@ -11,9 +11,9 @@ class GenerateArticleFeatures():
     
     def __init__(self):
         """Initiate the class"""
-        self.trainDataFileName = "training_set_rel3.tsv"
-        self.testDataFileName = "valid_set.tsv"
-        self.stopWordsFileName = "stopWords.txt"
+        self.trainDataFileName = "../Data/training_set_rel3.tsv"
+        self.testDataFileName = "../Data/valid_set.tsv"
+        self.stopWordsFileName = "../Data/StopWords.txt"
         self.clauseWordsList = ["which", "where", "what", "why", "who"]
         self.trainArticle = self.parseTsvFile(self.trainDataFileName)["essay"]
         self.trainFile = self.parseTsvFile(self.trainDataFileName)
