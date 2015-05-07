@@ -2,13 +2,14 @@
 import os
 import numpy as np
 import sys
+sys.path.append("..")
 import pandas as pd
 import string
 from collections import Counter
 from nltk.corpus import stopwords
 import pickle
 from math import log
-import util as util
+from Util.util import *
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize
 import csv
@@ -77,6 +78,7 @@ class EssayInstance:
         for word in self.word_dict:
             self.word_tfidf[word] = self.word_dict.get(word) * idf_dict.get(word, 1)
 
+
 class corpus_df:
     """
     Build the review document-frequency class
@@ -87,13 +89,14 @@ class corpus_df:
         self.idf = Counter()
         self.N = 0
         
+
     def fit(self, essay_list):
         """
         Construct the df Counter based on review_list
         """
         for essay in essay_list:
             current_df = Counter(essay.word_dict.keys())
-            util.increment(self.df, 1, current_df)
+            increment(self.df, 1, current_df)
         
         #inverse_df: log(N/n[word])
         self.N = len(essay_list)
@@ -102,49 +105,72 @@ class corpus_df:
             self.idf[word] = log(float(self.N)/self.idf[word])
 
 def decode(words):
-
+    '''
+    Decode words in the essays.
+    '''
     return str(words.decode("utf8","ignore"))
 
 
 def main():
-    train = pd.read_csv('../Data/training_set_rel3.tsv',sep='\t')
-    
-    
+    print "===========================================Loading training data============================================"
+    train = pd.read_csv('../Data/training_set_rel3.tsv', sep='\t')
+    test = pd.read_csv('../Data/valid_set.tsv', sep='\t')
+    print "=============================================Loading test data=============================================="
     for k in range(1, 9):
-        bagofwords_list = []
-        essay_list = []
-        pos_list = []
-        i = 0
-        mask = train["essay_set"] == k
-        partTrain = train[mask]
+        trainBagOfWordsList = []
+        trainEssayList = []
+        trainPosList = []
+        maskTrain = train["essay_set"] == k
+        partTrain = train[maskTrain]
+
+        testBagOfWordsList = []
+        testEssayList = []
+        testPosList = []
+        maskTest = test["essay_set"] == k
+        partTest = test[maskTest]
+
+        print "==================Generating Training Essay Set%d's part of speech and bag of words===================" %(k)
         for essay in partTrain['essay']:
             e = EssayInstance()
             e.construct_word_dict(essay)
-            essay_list.append(e)
-            bagofwords_list.append(e.word_dict)
-            pos_list.append(e.pos_tags)
-            i = i+1
-        corpus = corpus_df()
-        corpus.fit(essay_list)	
-        for i in essay_list:
-            i.transform_to_tfidf(corpus.idf)
+            trainEssayList.append(e)
+            trainBagOfWordsList.append(e.word_dict)
+            trainPosList.append(e.pos_tags)
+        print "================Training Essay set%d's part of speech and bag of words have been generated============" %(k)
+        print
+
+        print "=====================Generating Test Essay Set%d's part of speech and bag of words====================" %(k)
+        for essay in partTest['essay']:
+            e = EssayInstance()
+            e.construct_word_dict(essay)
+            testEssayList.append(e)
+            testBagOfWordsList.append(e.word_dict)
+            testPosList.append(e.pos_tags)
+        print "==================Test Essay Set%d's part of speech and bag of words have been generated==============" %(k)
+        print 
         
+        print "================Writing Training Essay Set%d's part of speech and bag of words into csv file==========" %(k)
         try:
-            featurePos = open("../FeatureData/featuresPosEssaySet{}.pkl".format(k), "wb")
-            pickle.dump(pos_list, featurePos)
+            featurePos = open("../FeatureData/testFeaturesPosEssaySet{}.pkl".format(k), "wb")
+            pickle.dump(trainPosList, featurePos)
             featurePos.close()
+            
         except Exception:
             print "Cannot write pos_list into file due to the exception:", sys.exc_info()[0]
             raise
-
+        print "============Training Essay Set%d's part of speech and bag of words have been written to file==========" %(k)
+        print 
+        print "=================Writing Test Essay Set%d's part of speech and bag of words into csv file=============" %(k)
         try:
-            featureWords = open("../FeatureData/featureWordsEssaySet{}.pkl".format(k), "wb")
-            pickle.dump(bagofwords_list, featureWords)
+            featureWords = open("../FeatureData/testFeatureWordsEssaySet{}.pkl".format(k), "wb")
+            pickle.dump(trainBagOfWordsList, featureWords)
             featureWords.close()
         except Exception:
             print  "Cannot write word_list into file due to the exception:", sys.exc_info()[0]
             raise
-       
+        print "==========Test Essay Set%d's part of speech and bag of words have been written into csv file==========" %(k)
+        print 
+
 
 if __name__ == '__main__':
     main()
