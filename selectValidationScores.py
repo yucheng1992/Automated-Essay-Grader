@@ -4,9 +4,12 @@ import sys
 import pickle
 
 
-class selectValidationScores():
-    """docstring for selectValidationScores"""
+class SelectValidationScores():
+    """Select Validation Scores from the validation score file."""
     def __init__(self):
+        '''
+        Initialize the SelectValidationScores class
+        '''
         self.validationScoreFileName = "valid_sample_submission_1_column.csv" 
         self.validationSetFileName = "valid_set.tsv"
         self.scores = self.readValidationScore()
@@ -79,5 +82,5 @@ class selectValidationScores():
 
 
 if __name__ == '__main__':
-    score = selectValidationScores()
+    score = SelectValidationScores()
     score.writeEssaySetScoresToFile()

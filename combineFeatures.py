@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-from generateArticleFeatures import *
+from GenerateArticleFeatures import *
 from collections import Counter
 from util import *
 from operator import itemgetter
@@ -9,10 +9,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
 
-class combineFeatures():
+class CombineFeatures():
     """Combine all the necessary features for every article."""
     
     def __init__(self):
+        '''
+        Initialize the CombineFeatures class.
+        '''
         self.posTrainFileName = "featuresPosEssaySet"
         self.wordsTrainFileName = "featureWordsEssaySet"
         self.missSpellTrainFileName = "missSpellingCount.pkl"
@@ -26,8 +29,12 @@ class combineFeatures():
         self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf, self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testTfidf = self.readFeaturesFromGenerateArticleFeatures()
 
     
-    def returnDomain1Score(self, essaySetNumber):
-        """select all the domain1 scores from the dataset"""
+    def returnDomainOneScore(self, essaySetNumber):
+        """
+        Select all the domain1 scores from the dataset.
+        @para   essaySetNumber: The number of the essay set.
+        @return domainOneScore: The domain1_score of the training essay set.
+        """
         
         df = pd.DataFrame
 
@@ -38,12 +45,15 @@ class combineFeatures():
             raise e
 
         mask = df["essay_set"] == essaySetNumber
-
-        return df[mask]["domain1_score"].tolist()
+        domainOneScore = df[mask]["domain1_score"].tolist()
+        return domainOneScore
 
     
-    def returnDomain2Score(self):
-        """select all the domain2 scores from the essay set2."""
+    def returnDomainTwoScore(self):
+        """
+        Select the domain2_score from the essay set2.
+        @return domainTwoScore: The domain2_score of the training essay set2.
+        """
 
         df = pd.DataFrame
 
@@ -54,12 +64,18 @@ class combineFeatures():
             raise e
         
         mask = df["essay_set"] == 2
-
-        return df[mask]["domain2_score"].tolist()
+        domainTwoScore = df[mask]["domain2_score"].tolist()
+        return domainTwoScore
 
 
     def readTrainFile(self, essaySetNumber):
-        """Read data from specific files"""
+        """
+        Read training data's part of speech, misspellings, bag of words from pkl files.
+        @para    essaySetNumber: The number of the training essay set.
+        @return  posData:   The training set's part of speech data.
+                 missData:  The training set's misspellings data.
+                 wordsData: The training set's bag of words data.
+        """
         try:
             print "==============Loading training Essay set%d's features from file==============" %(essaySetNumber)    
             fileName = self.posTrainFileName + str(essaySetNumber) + ".pkl"
@@ -81,7 +97,13 @@ class combineFeatures():
 
 
     def readTestFile(self, essaySetNumber):
-        """Read data from specific files"""
+        """
+        Read testing data's part of speech, misspellings, bag of words from pkl files.
+        @para   essaySetNumber: The number of the testing essay set.
+        @return posData:  The testing set's part of speech data.
+                missData: The testing set's misspellings data.
+                wordsData The testing set's bag of words data.
+        """
         try:
             print "===============Loading testing Essay set%d's features from file==============" %(essaySetNumber)
             fileName = self.posTestFileName + str(essaySetNumber) + ".pkl"
@@ -103,23 +125,33 @@ class combineFeatures():
 
     
     def readFeaturesFromGenerateArticleFeatures(self):
-        """read all the features from parseArticle"""
+        """
+        Read all the features from parseArticle.
+        """
          
-        articleFeatures = generateArticleFeatures()
+        articleFeatures = GenerateArticleFeatures()
         return articleFeatures.generateFeatures()
 
 
-    def combineAllFeatures(self, essaySetNumber, missDataStartIndex, isTrain=1):
-        """combine all the articless features together"""
+    def combineAllFeatures(self, essaySetNumber, misspellingDataStartIndex, isTrain=1):
+        """
+        Combine all the articless features together.
+        @para   essaySetNumber: The number of the essay set.
+                misspellingDataStartIndex: The start index of the misspelling data of this essay set.
+                isTrain: If isTrain is 1, this is a training set, and if isTrain is not 1, this is a test set.
+        @return combineData: All the combined features of this essay set.
+                j: The start index of the next essay set's misspelling data.
+        """
+
         if isTrain == 1:
-            domainOneScores = self.returnDomain1Score(essaySetNumber)
+            domainOneScores = self.returnDomainOneScore(essaySetNumber)
             if essaySetNumber == 2:
-                domainTwoScores = self.returnDomain2Score()
-            posData, missData, wordsData = self.readTrainFile(essaySetNumber) 
+                domainTwoScores = self.returnDomainTwoScore()
+            posData, misspellingData, wordsData = self.readTrainFile(essaySetNumber) 
         else:
-            posData, missData, wordsData = self.readTestFile(essaySetNumber)
+            posData, misspellingData, wordsData = self.readTestFile(essaySetNumber)
         combineData = []
-        j = missDataStartIndex
+        j = misspellingDataStartIndex
         print j
         for i in range(len(posData)):
             if isTrain == 1:
@@ -132,7 +164,7 @@ class combineFeatures():
                 featureCounter["sentenceNumber"] = self.trainSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.trainClauseWordNumber[essaySetNumber-1][i]
-                featureCounter["missSpelling"] = missData[j]
+                featureCounter["missSpelling"] = misspellingData[j]
                 featureCounter["domain1_score"] = domainOneScores[i]
                 if essaySetNumber == 2:
                     featureCounter["domain2_score"] = domainTwoScores[i]
@@ -144,7 +176,7 @@ class combineFeatures():
                 featureCounter["sentenceNumber"] = self.testSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.testAverageWordLength[essaySetNumber-1][i]
                 featureCounter["clauseWordNumber"] = self.testClauseWordNumber[essaySetNumber-1][i]
-                featureCounter["missSpelling"] = missData[j]
+                featureCounter["missSpelling"] = misspellingData[j]
             
             combineData.append(featureCounter)
             j = j + 1
@@ -154,7 +186,9 @@ class combineFeatures():
 
 
     def writeToCsv(self):
-        """write the combined features to a csv file"""
+        """
+        write the combined features to a csv file
+        """
         missDataStartTrainIdx = 0
         missDataStartTestIdx = 0
         for i in range(1, 9):
@@ -186,8 +220,8 @@ class combineFeatures():
             dfTest.to_csv("testingTfidfEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
-       
-
+        return
+        
 if __name__ == '__main__':
     cf = combineFeatures()
     cf.writeToCsv()

@@ -6,11 +6,11 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
 
-class generateArticleFeatures():
+class GenerateArticleFeatures():
     '''This is a class built for generating features from all the articles.''' 
     
     def __init__(self):
-        """initiate the class"""
+        """Initiate the class"""
         self.trainDataFileName = "training_set_rel3.tsv"
         self.testDataFileName = "valid_set.tsv"
         self.stopWordsFileName = "stopWords.txt"
@@ -23,7 +23,11 @@ class generateArticleFeatures():
 
 
     def parseTsvFile(self, fileName):
-        '''Read the essays from the tsv file ans return a dataframe containing all the essays.'''
+        '''
+        Read the essays from the tsv file ans return a dataframe containing all the essays.
+        @para   fileName: The name for the tsv file.
+        @return df: The DataFrame that is changed from the tsv file.
+        '''
     
         df = pd.DataFrame
     
@@ -36,7 +40,10 @@ class generateArticleFeatures():
     
     
     def readStopWords(self):
-        """Read a list of stop words from file"""
+        """
+        Read a list of stop words from the stop words file.
+        @return stopWords: A list that contains all the stop words read from the stop words file.
+        """
         
         stopWords = []
     
@@ -44,13 +51,17 @@ class generateArticleFeatures():
             f = open(self.stopWordsFileName)
             for line in f:
                 stopWords.append(line.rstrip())
-            return stopWords
         except Exception:
             print "Cannot open the stop words file due to exception", sys.exc_info()[0]
+        return stopWords
     
-    
+
     def deleteStopWords(self, article):
-        """delete the stop words of an article"""
+        """
+        Delete the stop words of an article
+        @para   article:  The specific essay.
+        @return wordList: A list contains all the words from the essay excluding the words in the stop words list.
+        """
         
         wordList = []
         words = article.split(" ")
@@ -61,29 +72,46 @@ class generateArticleFeatures():
     
     
     def countWord(self, wordList):
-        '''Take an article as input and return the numbers of its words'''
-    
-        return len(wordList)
+        '''
+        Take an article as input and return the numbers of its words
+        @para   wordList: A list which contains all the words in the essay excluding the stop words.
+        @return length: The number of the words in the essay.
+        '''
+        length = len(wordList)
+        return length
     
     
     def countSentence(self, article):
-        '''Calculate the number of sentences in an article'''
+        '''
+        Calculate the number of sentences in an article.
+        @para   article: The specific essay.
+        @return length: The number of the sentences in the essay.
+        '''
     
         sentences = re.split("\.|!", article)
-        return len(sentences)
+        length = len(sentences)
+        return length
     
     
     def countAverageWordLength(self, wordList):
-        """calculate the average word length of an article."""
+        """
+        calculate the average word length of an article.
+        @para    wordList: A list which contains all the words in the essay excluding the stop words.
+        @return  averageWordLength: The average word length of all the words in the essay excluding the stop words.
+        """
         totalLength = 0
         for word in wordList:
             totalLength += len(word)
-        
-        return float(totalLength) / self.countWord(wordList)
+        averageWordLength = float(totalLength) / self.countWord(wordList)
+        return averageWordLength
     
     
     def countClauseWord(self, article):
-        """Calculate the number of clause words in an article"""
+        """
+        Calculate the number of clause words in an article
+        @para   article: The specific essay
+        @return num: The number of the clause words in the article.
+        """
         num = 0
         wordList = article.split(" ")
         for word in wordList:
@@ -91,9 +119,13 @@ class generateArticleFeatures():
                 num += 1
         return num
 
+
     def generateFeatures(self):
-        """generate necessary features for all the articles"""
+        """
+        Generate all the necessary features for all the articles in the eight essay sets.
+        """
         
+        # Initialize training set's feature list.
         trainTotalWordNumber = []
         trainTotalSentenceNumber = []
         trainTotalAverageWordLength = []
@@ -101,6 +133,7 @@ class generateArticleFeatures():
         trainTotalFeature = []
         trainTotalTfidf = []
 
+        # Initialize test set's feature list.
         testTotalWordNumber = []
         testTotalSentenceNumber = []
         testTotalAverageWordLength = []
@@ -109,7 +142,7 @@ class generateArticleFeatures():
         testTotalTfidf = []
         
         for i in range(1, 9):
-            
+            # Select the essays from the DataFrame.
             trainMask = self.trainFile["essay_set"] == i
             trainEssaySet = self.trainFile[trainMask]["essay"]
             
@@ -142,7 +175,8 @@ class generateArticleFeatures():
             trainTotalFeature.append(vectorizer.get_feature_names())
             trainTotalTfidf.append(trainTfidf)
             testTotalTfidf.append(testTfidf)
-            
+           
+            # Append the training set's basic features.
             wordNumber = []
             sentenceNumber = []
             averageWordLength = []
@@ -157,6 +191,7 @@ class generateArticleFeatures():
             trainTotalAverageWordLength.append(averageWordLength)
             trainTotalClauseWordNumber.append(clauseWordNumber)
             
+            # Append the test set's basic features.
             wordNumber = []
             sentenceNumber = []
             averageWordLength = []
@@ -175,5 +210,5 @@ class generateArticleFeatures():
 
 
 if __name__ == '__main__':
-    features = generateArticleFeatures()
+    features = GenerateArticleFeatures()
     features.generateFeatures()

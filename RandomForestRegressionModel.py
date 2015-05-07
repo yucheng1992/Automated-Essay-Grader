@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 from sklearn.ensemble import RandomForestRegressor
-from score import quadratic_weighted_kappa
+from KappaScores import quadratic_weighted_kappa
 
 
 class randomForestRegression(object):
