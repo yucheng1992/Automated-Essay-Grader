@@ -81,6 +81,6 @@ class SelectValidationScores():
             raise e
 
 
-if __name__ == '__main__':
+def main():
     score = SelectValidationScores()
     score.writeEssaySetScoresToFile()
