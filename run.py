@@ -16,7 +16,7 @@ if __name__ == '__main__':
     SimilarityScore.main()
     SelectValidationScores.main()
     ExtractPos.main()
-    LinearRegressionModel.main()
     CombineFeatures.main()
+    LinearRegressionModel.main()
     GradientBoostingRegressionTreeModel.main()
     RandomForestRegressionModel.main()
