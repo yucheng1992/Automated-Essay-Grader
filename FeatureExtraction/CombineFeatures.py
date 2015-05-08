@@ -20,7 +20,7 @@ class CombineFeatures():
         '''
         self.posTrainFileName = "FeatureData/featuresPosEssaySet"
         self.missSpellTrainFileName = "FeatureData/misspellingCountTrain.pkl"
-        self.dataTrainFileName = "FeatureData/training_set_rel3.tsv"
+        self.dataTrainFileName = "Data/training_set_rel3.tsv"
         self.simScoreTrainFileName = "FeatureData/simScoreTrain"
 
         self.posTestFileName = "FeatureData/testFeaturesPosEssaySet"
