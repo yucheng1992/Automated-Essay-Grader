@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import re
 import sys
+sys.path.append("..")
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
@@ -11,9 +12,9 @@ class GenerateArticleFeatures():
     
     def __init__(self):
         """Initiate the class"""
-        self.trainDataFileName = "../Data/training_set_rel3.tsv"
-        self.testDataFileName = "../Data/valid_set.tsv"
-        self.stopWordsFileName = "../Data/StopWords.txt"
+        self.trainDataFileName = "Data/training_set_rel3.tsv"
+        self.testDataFileName = "Data/valid_set.tsv"
+        self.stopWordsFileName = "Data/StopWords.txt"
         self.clauseWordsList = ["which", "where", "what", "why", "who"]
         self.trainArticle = self.parseTsvFile(self.trainDataFileName)["essay"]
         self.trainFile = self.parseTsvFile(self.trainDataFileName)
@@ -41,8 +42,7 @@ class GenerateArticleFeatures():
     
     def readStopWords(self):
         """
-        Read a list of stop words from the stop words file.
-        @return stopWords: A list that contains all the stop words read from the stop words file.
+        Read a list of stop words from the stop words file.  @return stopWords: A list that contains all the stop words read from the stop words file.
         """
         
         stopWords = []

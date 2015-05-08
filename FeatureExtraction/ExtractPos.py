@@ -104,6 +104,7 @@ class corpus_df:
         for word in self.idf:
             self.idf[word] = log(float(self.N)/self.idf[word])
 
+
 def decode(words):
     '''
     Decode words in the essays.

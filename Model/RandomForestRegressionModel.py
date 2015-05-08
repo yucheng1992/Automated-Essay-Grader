@@ -131,11 +131,11 @@ class randomForestRegression(object):
 
 def main():
     # Write the result into a file called "RandomForestMaximalKappaScores.txt"
-    f = open("../Result/RandomForestMaximalKappaScores.txt", "wb")
+    f = open("Result/RandomForestMaximalKappaScores.txt", "wb")
     for i in range(1, 9):
-        train = "../TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
-        test = "../TestData/testingTfidfEssaySet" + str(i) + ".csv"
-        model = randomForestRegression(train, test, "../TestData/validationScores.pkl")
+        train = "TrainingData/trainingTfidfEssaySet" + str(i) + ".csv"
+        test = "TestData/testingTfidfEssaySet" + str(i) + ".csv"
+        model = randomForestRegression(train, test, "TestData/validationScores.pkl")
         max, depth, split, leaf = model.randomForestRegressionModel(i)
         f.write("Kappa score = %f, max_depth = %d, min_samples_split = %d, min_samples_leaf = %d \n" %(max, depth, split, leaf))
     f.close()

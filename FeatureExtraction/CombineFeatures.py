@@ -21,10 +21,12 @@ class CombineFeatures():
         self.posTrainFileName = "FeatureData/featuresPosEssaySet"
         self.missSpellTrainFileName = "FeatureData/misspellingCountTrain.pkl"
         self.dataTrainFileName = "FeatureData/training_set_rel3.tsv"
+        self.simScoreTrainFileName = "FeatureData/simScoreTrain"
 
         self.posTestFileName = "FeatureData/testFeaturesPosEssaySet"
         self.missSpellTestFileName = "FeatureData/misspellingCountValidate.pkl"
         self.dataTestFileName = "Data/valid_set.tsv"
+        self.simScoreTestFileName = "FeatureData/simScoreValidate"
         
         self.trainWordNumber, self.trainSentenceNumber, self.trainAverageWordLength, self.trainClauseWordNumber, self.trainFeature, self.trainTfidf, self.testWordNumber, self.testSentenceNumber, self.testAverageWordLength, self.testClauseWordNumber, self.testTfidf = self.readFeaturesFromGenerateArticleFeatures()
 
@@ -118,6 +120,25 @@ class CombineFeatures():
         return posData, missData
 
     
+    def readSimScoreFile(self, essaySetNumber, isTrainOrTest):
+        """
+        Read essay sets 3, 4, 5, 6's similarity scores from pkl files.
+        @param  essaySetNumber: The number of the testing essay set.
+                istrainOrTest:  Identify the file is training's or test's.
+        @return simScore: A list of the essay set's similarity score.
+        """
+        try:
+            if isTrainOrTest == 1:
+                fileName = self.simScoreTrainFileName + str(essaySetNumber) + ".pkl"
+            else:
+                fileName = self.simScoreTestFileName + str(essaySetNumber) + ".pkl"
+            fSimScore = open(fileName, "rb")
+            simScore = pickle.load(fSimScore)
+        except Exception, e:
+            raise e
+        return simScore
+    
+
     def readFeaturesFromGenerateArticleFeatures(self):
         """
         Read all the features from parseArticle.
@@ -150,10 +171,10 @@ class CombineFeatures():
         for i in range(len(posData)):
             if isTrain == 1:
                 dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.trainTfidf[essaySetNumber-1][i]))
-                if essaySetNumber == 2:
-                    print i
                 dictionary = Counter(dictionary)
                 featureCounter = posData[i] + dictionary
+                if essaySetNumber in [3, 4, 5, 6]:
+                    featureCounter["simScore"] = self.readSimScoreFile(essaySetNumber, 1)
                 featureCounter["wordNumber"] = self.trainWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.trainSentenceNumber[essaySetNumber-1][i]
                 featureCounter["averageWordLength"] = self.trainAverageWordLength[essaySetNumber-1][i]
@@ -165,6 +186,8 @@ class CombineFeatures():
             else:
                 dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.testTfidf[essaySetNumber-1][i]))
                 dictionary = Counter(dictionary)
+                if essaySetNumber in [3, 4, 5, 6]:
+                    featureCounter["simScore"] = self.readSimScoreFile(essaySetNumber, 0)
                 featureCounter = posData[i] + dictionary
                 featureCounter["wordNumber"] = self.testWordNumber[essaySetNumber-1][i]
                 featureCounter["sentenceNumber"] = self.testSentenceNumber[essaySetNumber-1][i]
@@ -210,8 +233,8 @@ class CombineFeatures():
             dfTrain = pd.DataFrame(trainFeatures)
             dfTest = pd.DataFrame(testFeatures)
             print "=================Writing essay set%d's features to csv file==================" %(i)
-            dfTrain.to_csv("../TrainingData/trainingTfidfEssaySet{}.csv".format(i))
-            dfTest.to_csv("../TestData/testingTfidfEssaySet{}.csv".format(i))
+            dfTrain.to_csv("TrainingData/trainingTfidfEssaySet{}.csv".format(i))
+            dfTest.to_csv("TestData/testingTfidfEssaySet{}.csv".format(i))
             print "============Essay set%d's features have been written to csv file!============" %(i)
             print 
         return

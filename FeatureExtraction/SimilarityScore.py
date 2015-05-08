@@ -38,6 +38,7 @@ def dotProduct(d1, d2):
     else:
         return np.sum(d1.get(key, 0) * value for key, value in d2.items())
 
+
 def cosSimilarity(tfidf, featureNames, tfidfDictPrompt, subset, label, i):
     """
     @param tfidf: a model trained from given text sets.
