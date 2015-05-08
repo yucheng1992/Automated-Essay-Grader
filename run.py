@@ -1,6 +1,6 @@
-from FeatureExtraction import ExtractPos
-from FeatureExtraction import GenerateArticleFeatures
-from FeatureExtraction import CombineFeatures
+#from FeatureExtraction import ExtractPos
+#from FeatureExtraction import GenerateArticleFeatures
+#from FeatureExtraction import CombineFeatures
 from FeatureExtraction import MisspellingChecker
 from FeatureExtraction import SimilarityScore
 from Model import GradientBoostingRegressionTreeModel
@@ -14,9 +14,9 @@ from Util import SelectValidationScores
 if __name__ == '__main__':
     MisspellingChecker.main()
     SimilarityScore.main()
-    SelectValidationScores.main()
-    ExtractPos.main()
-    CombineFeatures.main()
-    LinearRegressionModel.main()
-    GradientBoostingRegressionTreeModel.main()
-    RandomForestRegressionModel.main()
+ #   SelectValidationScores.main()
+  #  ExtractPos.main()
+   # CombineFeatures.main()
+    #LinearRegressionModel.main()
+    #GradientBoostingRegressionTreeModel.main()
+    #RandomForestRegressionModel.main()
