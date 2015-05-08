@@ -148,7 +148,7 @@ def main():
         
         print "================Writing Training Essay Set%d's part of speech and bag of words into csv file==========" %(k)
         try:
-            featurePos = open("FeatureData/testFeaturesPosEssaySet{}.pkl".format(k), "wb")
+            featurePos = open("FeatureData/trainFeaturesPosEssaySet{}.pkl".format(k), "wb")
             pickle.dump(trainPosList, featurePos)
             featurePos.close()
             
@@ -159,7 +159,7 @@ def main():
         print 
         print "=================Writing Test Essay Set%d's part of speech and bag of words into csv file=============" %(k)
         try:
-            featurePos = open("FeatureData/testFeaturesEssaySet{}.pkl".format(k), "wb")
+            featurePos = open("FeatureData/testFeaturesPosEssaySet{}.pkl".format(k), "wb")
             pickle.dump(testPosList, featurePos)
             featurePos.close()
         except Exception:

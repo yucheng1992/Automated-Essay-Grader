@@ -18,7 +18,7 @@ class CombineFeatures():
         '''
         Initialize the CombineFeatures class.
         '''
-        self.posTrainFileName = "FeatureData/featuresPosEssaySet"
+        self.posTrainFileName = "FeatureData/trainFeaturesPosEssaySet"
         self.missSpellTrainFileName = "FeatureData/misspellingCountTrain.pkl"
         self.dataTrainFileName = "Data/training_set_rel3.tsv"
         self.simScoreTrainFileName = "FeatureData/simScoreTrain"
