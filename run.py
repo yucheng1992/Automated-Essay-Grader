@@ -5,6 +5,7 @@ from FeatureExtraction import MisspellingChecker
 from FeatureExtraction import SimilarityScore
 from Model import GradientBoostingRegressionTreeModel
 from Model import RandomForestRegressionModel
+from Model import LinearRegressionModel
 from Util import util
 from Util import KappaScores
 from Util import SelectValidationScores
@@ -14,6 +15,7 @@ if __name__ == '__main__':
     MisspellingChecker.main()
     SimilarityScore.main()
     SelectValidationScores.main()
+    LinearRegressionModel.main()
     ExtractPos.main()
     CombineFeatures.main()
     GradientBoostingRegressionTreeModel.main()

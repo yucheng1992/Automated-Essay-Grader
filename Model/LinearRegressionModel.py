@@ -30,7 +30,7 @@ def generate_test(filename_X, filename_y,essayNum):
     pfile = open(filename_y,'rb')
     test_score = pickle.load(pfile)
     pfile.close()
-    y_test = test_score[i-1]
+    y_test = test_score[essayNum-1]
     return X_test,y_test
 
 def linear_predict(X_train,y_train,X_test,y_test,essayNum):
@@ -51,7 +51,7 @@ def linear_predict(X_train,y_train,X_test,y_test,essayNum):
         kappaScore = quadratic_weighted_kappa(y_test,predictDomainOneScores)
     else:
         kappaDomainOne = quadratic_weighted_kappa(y_test[0::2],predictDomainOneScores)        
-        data = pd.DataFrame.from_csv("training_set_rel3.tsv",sep="\t")
+        data = pd.DataFrame.from_csv("Data/training_set_rel3.tsv",sep="\t")
         domainTwoScore = data[data["essay_set"] == 2]["domain2_score"]
 
         clf = linear_model.LinearRegression()
@@ -64,12 +64,11 @@ def linear_predict(X_train,y_train,X_test,y_test,essayNum):
         
     return kappaScore
 
-if __name__ == '__main__':
-    
+def main(): 
     res_list = []
     for i in range(1,9):
-        X_train,y_train = generate_train('essaySet' + str(i) + '.csv')
-        X_test,y_test = generate_test('validessaySet'+str(i)+'.csv','validationScores.pkl',i)
+        X_train,y_train = generate_train('LinearRegressionData/essaySet' + str(i) + '.csv')
+        X_test,y_test = generate_test('LinearRegressionData/validessaySet'+str(i)+'.csv','TestData/validationScores.pkl',i)
         kappa_score = linear_predict(X_train,y_train,X_test,y_test,i)
         res_list.append(kappa_score)
     
