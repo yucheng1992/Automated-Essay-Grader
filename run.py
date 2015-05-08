@@ -13,7 +13,7 @@ from Util import SelectValidationScores
 if __name__ == '__main__':
     MisspellingChecker.main()
     SimilarityScore.main()
-    FeatureExtraction.main()
+    ExtractPos.main()
     CombineFeatures.main()
     GradientBoostingRegressionTreeModel.main()
     RandomForestRegressionModel.main()
