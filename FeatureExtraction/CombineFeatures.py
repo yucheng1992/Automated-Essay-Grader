@@ -167,7 +167,6 @@ class CombineFeatures():
             posData, misspellingData = self.readTestFile(essaySetNumber)
         combineData = []
         j = misspellingDataStartIndex
-        print j
         for i in range(len(posData)):
             if isTrain == 1:
                 dictionary = dict(zip(self.trainFeature[essaySetNumber-1], self.trainTfidf[essaySetNumber-1][i]))
